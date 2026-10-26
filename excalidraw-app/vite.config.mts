@@ -260,13 +260,25 @@ export default defineConfig(({ mode }) => {
       svgrPlugin(),
       ViteEjsPlugin(),
       VitePWA({
-        registerType: "autoUpdate",
+        // `autoUpdate` would also reload the page from an `activated` listener
+        // inside the app bundle. That listener is registered only after the
+        // bundle executes, which is later than this small worker can
+        // skipWaiting on a normal reload, so the precached shell stays up.
+        // Prompt mode does not add that listener. skipWaiting/clientsClaim are
+        // set below, and sw-navigate-clients.js performs the one reload.
+        // Offline precache is unchanged.
+        registerType: "prompt",
         devOptions: {
           /* set this flag to true to enable in Development mode */
           enabled: envVars.VITE_APP_ENABLE_PWA === "true",
         },
 
         workbox: {
+          skipWaiting: true,
+          clientsClaim: true,
+          // Relative to sw.js. On GitHub Pages that is /excalidraw/sw.js, so
+          // this must not be an origin-root path.
+          importScripts: ["sw-navigate-clients.js"],
           // don't precache fonts, locales and separate chunks
           globIgnores: [
             "fonts.css",
@@ -357,6 +369,10 @@ export default defineConfig(({ mode }) => {
         manifest: {
           short_name: "Excalidraw",
           name: "Excalidraw",
+          // Relative to the manifest URL so GitHub Pages (/excalidraw/) and a
+          // local `/` build both stay inside the service worker scope.
+          // An absolute "/" opens yiming.github.io instead of the app.
+          start_url: "./",
           description:
             "Excalidraw is a whiteboard tool that lets you easily sketch diagrams that have a hand-drawn feel to them.",
           icons: [
@@ -381,21 +397,20 @@ export default defineConfig(({ mode }) => {
               type: "image/png",
             },
           ],
-          start_url: "/",
           id: "excalidraw",
           display: "standalone",
           theme_color: "#121212",
           background_color: "#ffffff",
           file_handlers: [
             {
-              action: "/",
+              action: "./",
               accept: {
                 "application/vnd.excalidraw+json": [".excalidraw"],
               },
             },
           ],
           share_target: {
-            action: "/web-share-target",
+            action: "web-share-target",
             method: "POST",
             enctype: "multipart/form-data",
             params: {
@@ -413,32 +428,32 @@ export default defineConfig(({ mode }) => {
           },
           screenshots: [
             {
-              src: "/screenshots/virtual-whiteboard.png",
+              src: "screenshots/virtual-whiteboard.png",
               type: "image/png",
               sizes: "462x945",
             },
             {
-              src: "/screenshots/wireframe.png",
+              src: "screenshots/wireframe.png",
               type: "image/png",
               sizes: "462x945",
             },
             {
-              src: "/screenshots/illustration.png",
+              src: "screenshots/illustration.png",
               type: "image/png",
               sizes: "462x945",
             },
             {
-              src: "/screenshots/shapes.png",
+              src: "screenshots/shapes.png",
               type: "image/png",
               sizes: "462x945",
             },
             {
-              src: "/screenshots/collaboration.png",
+              src: "screenshots/collaboration.png",
               type: "image/png",
               sizes: "462x945",
             },
             {
-              src: "/screenshots/export.png",
+              src: "screenshots/export.png",
               type: "image/png",
               sizes: "462x945",
             },

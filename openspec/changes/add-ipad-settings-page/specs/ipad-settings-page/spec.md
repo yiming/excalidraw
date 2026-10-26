@@ -33,6 +33,20 @@
 - **WHEN** 使用者開啟設定頁
 - **THEN** 左側清單有一個 Special Thanks To，並且有關於、手指模式、偏好設定、主題、語系
 
+#### Scenario: Category order
+
+- **WHEN** 使用者開啟設定頁
+- **THEN** 類別順序是 Special Thanks To、關於、手指模式、偏好設定、主題、語系
+
+### Requirement: About category describes this fork
+
+關於類別 SHALL 顯示應用名稱、說明這是 Excalidraw 的 iPad 友善分支、沿用既有版本資訊，以及這個分支的儲存庫連結。關於 MUST NOT 包含 Special Thanks To 的五個致謝連結。
+
+#### Scenario: About shows the fork
+
+- **WHEN** 使用者選擇關於
+- **THEN** 頁面有應用名稱、iPad 友善分支的說明、版本，以及此分支儲存庫的連結，且沒有 Excalidraw+、Discord 或 Sign up
+
 ### Requirement: Credit links live only on Special Thanks To
 
 Special Thanks To 的右側 SHALL 包含這五個連結，且 MUST NOT 刪除：Excalidraw+、GitHub、追蹤我們、Discord、Sign up。同一頁 SHALL 有一句感謝 Excalidraw 原作者的普通文字，並 MUST NOT 另加 GitHub 網址；既有的 GitHub 連結就是出處。這五個連結 MUST NOT 出現在漢堡選單、右上角宣傳列，或任何其他設定類別（包含關於）。

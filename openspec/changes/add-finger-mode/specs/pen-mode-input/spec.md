@@ -64,12 +64,12 @@
 #### Scenario: Toggle before a pen is detected
 
 - **WHEN** `penDetected` 為 false，使用者在更多工具選單啟動筆模式項目
-- **THEN** `penMode` 變為 true，且該項目顯示為開啟
+- **THEN** `penMode` 變為 true，且該項目以可見的「開」與勾選狀態表示開啟
 
 #### Scenario: Toggle off
 
 - **WHEN** `penMode` 為 true，使用者再啟動同一個項目
-- **THEN** `penMode` 變為 false，且該項目顯示為關閉
+- **THEN** `penMode` 變為 false，且該項目以可見的「關」表示關閉
 
 #### Scenario: Row height follows the size tier
 

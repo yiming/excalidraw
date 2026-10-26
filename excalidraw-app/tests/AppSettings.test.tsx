@@ -57,6 +57,18 @@ describe("iPad settings page", () => {
       document.querySelector("[data-testid='settings-category-thanks']")
         ?.textContent,
     ).toBe("Special Thanks To");
+    expect(
+      Array.from(
+        document.querySelectorAll("button[data-testid^='settings-category-']"),
+      ).map((button) => button.getAttribute("data-testid")),
+    ).toEqual([
+      "settings-category-thanks",
+      "settings-category-about",
+      "settings-category-finger",
+      "settings-category-preferences",
+      "settings-category-theme",
+      "settings-category-language",
+    ]);
   });
 
   it("shows the thank-you sentence and the five links on one page", () => {
@@ -84,6 +96,40 @@ describe("iPad settings page", () => {
     expect(hrefs.some((href) => href.includes("discord.gg"))).toBe(true);
     expect(hrefs.some((href) => href.includes("sign-up"))).toBe(true);
     expect(hrefs).toHaveLength(5);
+  });
+
+  it("describes this fork on About and keeps credit links off that page", () => {
+    act(() => {
+      h.app.setState({ openDialog: { name: "settings" } });
+    });
+    fireEvent.click(
+      document.querySelector("[data-testid='settings-category-about']")!,
+    );
+    const about = document.querySelector("[data-testid='settings-about']");
+    expect(
+      about?.querySelector("[data-testid='settings-about-name']")?.textContent,
+    ).toBe("Excalidraw");
+    expect(about?.textContent).toContain(
+      "An iPad-friendly fork of Excalidraw.",
+    );
+    expect(
+      about?.querySelector("[data-testid='settings-about-version']")
+        ?.textContent,
+    ).toContain("Version");
+    const repo = about?.querySelector(
+      "[data-testid='settings-about-repo']",
+    ) as HTMLAnchorElement | null;
+    expect(repo?.href).toBe("https://github.com/yiming/excalidraw");
+    const hrefs = Array.from(about?.querySelectorAll("a") ?? []).map(
+      (anchor) => (anchor as HTMLAnchorElement).href,
+    );
+    expect(hrefs).toHaveLength(1);
+    expect(about?.textContent).not.toContain("Excalidraw+");
+    expect(about?.textContent).not.toContain("Discord");
+    expect(about?.textContent).not.toContain("Sign up");
+
+    fireEvent.click(document.querySelector("[data-testid='settings-close']")!);
+    expect(h.state.openDialog).toBeNull();
   });
 
   it("defaults the finger-mode size tier to large and keeps the switch out of settings", () => {

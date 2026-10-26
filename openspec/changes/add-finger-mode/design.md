@@ -54,7 +54,7 @@
 
 ### 開關放在更多工具
 
-桌面 `Toolbar` 與手機 `MobileToolbar` 的三點選單都放同一個 `PenModeMenuItem`，緊接在雷射筆之後。使用既有 `DropdownMenu.ItemCheckbox`：勾選圖示加上 `aria-pressed` 表示開或關，`selected` 用現成的選取底色。點下去 `preventDefault`，選單保持打開，手指才看得見狀態切換。這一列的高度跟隨設定頁的尺寸段位，不在這裡寫死 44px。預設段位是大（選單項目高 40px）。特大才把選單項目加到至少 44px。文案沿用 `toolBar.penMode`，英文與繁體中文改成說明手指會平移與縮放；其他語系暫時留舊譯文。
+桌面 `Toolbar` 與手機 `MobileToolbar` 的三點選單都放同一個 `PenModeMenuItem`，緊接在雷射筆之後。使用既有 `DropdownMenu.ItemCheckbox`：勾選圖示、`aria-pressed`、`selected` 選取底色，再加上可見的開／關文字。未勾選的圖示是空白方塊，單靠圖示看不出關。點下去 `preventDefault`，選單保持打開，手指才看得見狀態切換。這一列的高度跟隨設定頁的尺寸段位，不在這裡寫死 44px。預設段位是大（選單項目高 40px）。特大才把選單項目加到至少 44px。文案沿用 `toolBar.penMode`，英文與繁體中文改成說明手指會平移與縮放；其他語系暫時留舊譯文。
 
 `togglePenMode(null)` 繼續反轉 `penMode`。不新做 action。
 
