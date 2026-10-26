@@ -205,6 +205,33 @@ describe("iPad settings page", () => {
     expect(h.state.fingerModeRotateHandle).toBe("large");
   });
 
+  it("keeps the section list beside the detail on every section", () => {
+    openSettings();
+    const sections = [
+      "settings-category-thanks",
+      "settings-category-preferences",
+      "settings-category-themeLanguage",
+      "settings-category-about",
+    ];
+    for (const id of sections) {
+      fireEvent.click(document.querySelector(`[data-testid='${id}']`)!);
+      const layout = document.querySelector("[data-testid='settings-dialog']");
+      const list = layout?.querySelector(
+        "[data-testid='settings-category-list']",
+      );
+      const detail = layout?.querySelector("[data-testid='settings-detail']");
+      expect(list).not.toBeNull();
+      expect(detail).not.toBeNull();
+      expect(
+        list!.compareDocumentPosition(detail!) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+      ).not.toBe(0);
+    }
+    expect(document.querySelector(".Modal.AppSettings")).not.toBeNull();
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(h.state.openDialog).toBeNull();
+  });
+
   it("uses Switch for a preference and closes on Escape", () => {
     openSettings();
     fireEvent.click(
