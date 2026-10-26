@@ -86,14 +86,34 @@ Special Thanks To 的右側 SHALL 包含這五個連結，且 MUST NOT 刪除：
 
 ### Requirement: Finger-mode details live in settings
 
-設定頁 SHALL 有「手指模式」類別，用來控制細節選項。該類別 MUST NOT 包含 ON／OFF 開關。開關 SHALL 只出現在三點「更多工具」選單，且該選單項目只是開關。細節選項 SHALL 包含：是否放大按鈕、是否放大物件與變形控制點。其他同類選項可以之後加入，但不得取代這兩項。
+設定頁 SHALL 有「手指模式」類別，用來控制細節選項。該類別 MUST NOT 包含 ON／OFF 開關。開關 SHALL 只出現在三點「更多工具」選單，且該選單項目只是開關。按鈕、變形控制點與選單項目的尺寸 SHALL 分成四段：小、中、大、特大。小 SHALL 為 Excalidraw 原本尺寸。中與大 SHALL 為小與特大之間的兩段。預設 SHALL 為大。特大 SHALL 為 44px 目標：按鈕 44px、變形控制點 40–44px、選單項目高度至少 44px。
 
 #### Scenario: Toggle is only in the more-tools menu
 
 - **WHEN** 使用者打開三點「更多工具」選單
-- **THEN** finger mode 的控制只有 ON／OFF 開關，沒有放大按鈕或控制點的細節
+- **THEN** finger mode 的控制只有 ON／OFF 開關，沒有尺寸四段
 
-#### Scenario: Details are in the settings category
+#### Scenario: Size tiers are in the settings category
 
 - **WHEN** finger mode 為開啟且使用者在設定頁選擇「手指模式」
-- **THEN** 右側提供是否放大按鈕、是否放大物件與變形控制點，且沒有 ON／OFF 開關
+- **THEN** 右側提供小、中、大、特大，且沒有 ON／OFF 開關
+
+#### Scenario: Default tier is large
+
+- **WHEN** 使用者尚未改過手指模式尺寸
+- **THEN** 目前尺寸是大
+
+#### Scenario: Small keeps original sizes
+
+- **WHEN** 使用者選擇小
+- **THEN** 按鈕、變形控制點與選單項目使用 Excalidraw 原本尺寸
+
+#### Scenario: Extra large is the forty-four pixel target
+
+- **WHEN** 使用者選擇特大
+- **THEN** 按鈕為 44px，變形控制點為 40–44px，選單項目高度至少 44px
+
+#### Scenario: Medium and large sit between the ends
+
+- **WHEN** 使用者選擇中或大
+- **THEN** 該段大於小的原本尺寸，且小於特大的 44px 目標
