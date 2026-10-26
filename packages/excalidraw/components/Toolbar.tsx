@@ -11,6 +11,7 @@ import { HintViewer } from "./HintViewer";
 import { Island } from "./Island";
 import { LockButton } from "./LockButton";
 import { PenModeButton } from "./PenModeButton";
+import { PenModeMenuItem } from "./PenModeMenuItem";
 import Stack from "./Stack";
 import DropdownMenu from "./dropdownMenu/DropdownMenu";
 import {
@@ -171,6 +172,7 @@ const ExtraToolsDropdown = ({
         >
           {t("toolBar.laser")}
         </DropdownMenu.Item>
+        <PenModeMenuItem app={app} />
         <DropdownMenu.Item
           onSelect={() => app.setActiveTool({ type: "bucketfill" })}
           icon={bucketFillIcon}

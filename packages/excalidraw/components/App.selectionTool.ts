@@ -46,6 +46,7 @@ import {
   updateBoundElements,
   updateFrameMembershipOfSelectedElements,
 } from "@excalidraw/element";
+
 import {
   clamp,
   pointDistance,
@@ -76,6 +77,8 @@ import {
 } from "../scene";
 
 import { snapDraggedElements, snapResizingElements } from "../snapping";
+
+import { isCoarsePointer, resolveFingerModeHandleSize } from "./penModePointer";
 
 import { selectGroupsForSelectedElements } from "./App.selection";
 
@@ -1254,6 +1257,11 @@ export class AppSelectionTool {
       ) {
         return null;
       }
+      const handleSize = resolveFingerModeHandleSize({
+        penMode: state.penMode,
+        coarsePointer: isCoarsePointer(this.app.ownerWindow),
+        tier: state.fingerModeSize,
+      });
       const elementWithTransformHandleType = getElementWithTransformHandleType(
         this.app.scene.getNonDeletedElements(),
         state,
@@ -1263,6 +1271,7 @@ export class AppSelectionTool {
         pointerType,
         this.app.scene.getNonDeletedElementsMap(),
         editorInterface,
+        handleSize,
       );
       return elementWithTransformHandleType?.transformHandleType
         ? {
@@ -1274,6 +1283,11 @@ export class AppSelectionTool {
     }
 
     if (selectedElements.length > 1) {
+      const handleSize = resolveFingerModeHandleSize({
+        penMode: state.penMode,
+        coarsePointer: isCoarsePointer(this.app.ownerWindow),
+        tier: state.fingerModeSize,
+      });
       const transformHandleType = getTransformHandleTypeFromCoords(
         getCommonBounds(selectedElements),
         sceneX,
@@ -1281,6 +1295,7 @@ export class AppSelectionTool {
         state.zoom,
         pointerType,
         editorInterface,
+        handleSize,
       );
       return transformHandleType ? { transformHandleType } : null;
     }

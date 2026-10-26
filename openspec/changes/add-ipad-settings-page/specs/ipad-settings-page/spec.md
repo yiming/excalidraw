@@ -84,6 +84,15 @@ Special Thanks To 的右側 SHALL 包含這五個連結，且 MUST NOT 刪除：
 - **WHEN** 使用者在設定頁變更一項原本屬於偏好設定的選項
 - **THEN** 該選項的效果與搬移前相同，並仍寫入原本的本地儲存
 
+### Requirement: Plus and sign-up links are moved not removed
+
+Excalidraw+ 與 Sign up 連結 SHALL 被搬到設定頁的 Special Thanks To。本變更 MUST NOT 刪除這兩個連結。
+
+#### Scenario: Links remain reachable
+
+- **WHEN** 使用者開啟設定頁的 Special Thanks To
+- **THEN** Excalidraw+ 與 Sign up 連結仍可使用，目的地與搬移前相同
+
 ### Requirement: Finger-mode details live in settings
 
 設定頁 SHALL 有「手指模式」類別，以一個尺寸選項同時控制一般按鈕、大按鈕、選單項目與變形控制點。段位 SHALL 為小、中、大、特大。預設 SHALL 為大。該類別 MUST NOT 包含 ON／OFF 開關。開關 SHALL 只出現在三點「更多工具」選單。筆模式開啟且主要指標為粗指標時，尺寸 SHALL 依序為一般按鈕、大按鈕、選單高度、選單間距、變形控制點：小 32／36／32／1／8px，中 36／39／36／4／20px，大 40／42／40／6／32px，特大 44／44／至少 44／8／44px。筆模式關閉或指標不是粗指標時 SHALL 維持上游尺寸。

@@ -1079,4 +1079,22 @@ body.excalidraw-cursor-resize * {
     letter-spacing: 0.6px;
     font-family: "Assistant";
   }
+
+  &.excalidraw--finger-targets {
+    .dropdown-menu-item {
+      min-height: var(--finger-menu-item-height);
+      height: auto;
+    }
+
+    .dropdown-menu-container {
+      gap: var(--finger-menu-gap);
+    }
+  }
+
+  &.excalidraw--finger-quiet {
+    .ToolIcon__keybinding,
+    .HintViewer {
+      display: none;
+    }
+  }
 }
