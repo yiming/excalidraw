@@ -2,7 +2,7 @@
 
 ## Purpose
 
-開發目標第 3 項：選單裡的 Workspace 只使用瀏覽器本地儲存。兩個檔案，每個檔案最多 10 頁，計入的頁數合計最多 20 頁。無限畫布的頁暫時不計入這 20 頁。
+開發目標第 3 項：選單裡的 Workspace 只使用瀏覽器的 IndexedDB。兩個檔案，每個檔案最多 10 頁，計入的頁數合計最多 20 頁。無限畫布的頁暫時不計入這 20 頁。
 
 ## ADDED Requirements
 
@@ -27,7 +27,7 @@
 
 ### Requirement: Files stay on local browser storage
 
-這個目標的檔案 SHALL 存在瀏覽器本地。本目標 MUST NOT 包含 Google Drive，也 MUST NOT 包含「移到 Drive」。
+這個目標的檔案 SHALL 存在瀏覽器的 IndexedDB。本目標 MUST NOT 包含 Google Drive，也 MUST NOT 包含「移到 Drive」。
 
 #### Scenario: Drive is not available
 
@@ -45,7 +45,7 @@
 
 ### Requirement: Local storage holds two files and twenty pages
 
-計入的檔案 MUST NOT 超過 2 個。每個檔案 MUST NOT 超過 10 頁。計入的頁數合計 MUST NOT 超過 20。無限畫布的頁暫時 MUST NOT 計入這 20 頁。這是暫時決定，以後再審查。已滿時 SHALL 提示使用者刪除或匯出。無限畫布 MUST NOT 計入這 2 個檔。
+計入的檔案 MUST NOT 超過 2 個。每個檔案 MUST NOT 超過 10 頁。計入的頁數合計 MUST NOT 超過 20。無限畫布的頁暫時 MUST NOT 計入這 20 頁。這是暫時決定，以後再審查。已滿時 SHALL 顯示軟警告，讓使用者選擇刪除舊檔或匯出，且 MUST NOT 擋住該動作。無限畫布 MUST NOT 計入這 2 個檔。
 
 #### Scenario: Two files of ten pages fill the total
 
@@ -65,4 +65,4 @@
 #### Scenario: A full library prompts delete or export
 
 - **WHEN** 本地儲存已滿
-- **THEN** 提示刪除或匯出，且不提供 Google Drive
+- **THEN** 顯示軟警告，讓使用者選擇刪除舊檔或匯出，不擋住該動作，且不提供 Google Drive

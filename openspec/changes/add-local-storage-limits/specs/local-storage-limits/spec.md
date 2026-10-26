@@ -15,10 +15,10 @@
 - **WHEN** 本地已有 1 個計入檔數的檔案，新檔與既有檔各自不超過 10 頁，且計入的頁數合計仍不超過 20
 - **THEN** 可以建立第 2 個檔案
 
-#### Scenario: A third counted file is refused in phase 2a
+#### Scenario: A third counted file warns without blocking in phase 2a
 
 - **WHEN** 處於 2a，本地已有 2 個計入檔數的檔案，且使用者要新建另一個計入檔數的檔案
-- **THEN** 不建立該檔案，並提示刪除檔案或頁面，或匯出成檔案（例如 `.excalidraw`），且不提供 Google Drive
+- **THEN** 不擋住該動作，並顯示軟警告，讓使用者選擇刪除舊檔或匯出成檔案（例如 `.excalidraw`），且不提供 Google Drive
 
 ### Requirement: At most ten pages per file and twenty counted pages
 
@@ -29,15 +29,15 @@
 - **WHEN** 本地是 2 個檔各 10 頁
 - **THEN** 這個組合可以存在
 
-#### Scenario: An eleventh page in one file is refused in phase 2a
+#### Scenario: An eleventh page in one file warns without blocking in phase 2a
 
 - **WHEN** 處於 2a，一個檔案已有 10 頁，且使用者要再新增一頁
-- **THEN** 不新增該頁，並提示刪除檔案或頁面，或匯出成檔案（例如 `.excalidraw`），且不提供 Google Drive
+- **THEN** 不擋住該動作，並顯示軟警告，讓使用者選擇刪除舊檔或匯出成檔案（例如 `.excalidraw`），且不提供 Google Drive
 
-#### Scenario: A twenty-first counted page is refused in phase 2a
+#### Scenario: A twenty-first counted page warns without blocking in phase 2a
 
 - **WHEN** 處於 2a，計入的頁數合計已有 20，且使用者要再新增一頁計入的頁
-- **THEN** 不新增該頁，並提示刪除檔案或頁面，或匯出成檔案（例如 `.excalidraw`），且不提供 Google Drive
+- **THEN** 不擋住該動作，並顯示軟警告，讓使用者選擇刪除舊檔或匯出成檔案（例如 `.excalidraw`），且不提供 Google Drive
 
 #### Scenario: An infinite canvas page is not counted yet
 
@@ -48,15 +48,15 @@
 
 檔案數少於 2 時，每個檔案仍 MUST NOT 超過 10 頁，計入的頁數合計仍 MUST NOT 超過 20。計入的頁數合計少於 20 時，計入檔數的檔案仍 MUST NOT 超過 2。
 
-#### Scenario: One file stops at ten pages
+#### Scenario: One file at ten pages warns without blocking
 
 - **WHEN** 處於 2a，只有 1 個檔案且已有 10 頁，使用者要再新增一頁
-- **THEN** 不新增該頁，並提示刪除或匯出成檔案，且不提供 Google Drive
+- **THEN** 不擋住該動作，並顯示軟警告，讓使用者選擇刪除舊檔或匯出成檔案，且不提供 Google Drive
 
-#### Scenario: Two small files stop at two files
+#### Scenario: Two small files warn without blocking
 
 - **WHEN** 處於 2a，已有 2 個計入檔數的檔案且計入的頁數合計少於 20，使用者要新建另一個計入檔數的檔案
-- **THEN** 不建立該檔案，並提示刪除或匯出成檔案，且不提供 Google Drive
+- **THEN** 不擋住該動作，並顯示軟警告，讓使用者選擇刪除舊檔或匯出成檔案，且不提供 Google Drive
 
 ### Requirement: Phase 2b limit prompt offers move beside delete
 
@@ -65,7 +65,7 @@
 #### Scenario: The limit prompt offers move in phase 2b
 
 - **WHEN** 處於 2b，且新建檔案或新增一頁會超過任一上限
-- **THEN** 不建立該檔或該頁，提示提供刪除以及「移到 Google Drive」
+- **THEN** 不擋住該動作，並顯示軟警告，提示提供刪除以及「移到 Google Drive」
 
 #### Scenario: Phase 2a has no move option
 
