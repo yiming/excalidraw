@@ -59,7 +59,7 @@
 
 ### Requirement: Pen mode toggle lives in extra tools
 
-系統 SHALL 在三點「更多工具」選單中提供筆模式開關，與雷射筆、畫框同一層。開關 SHALL 在尚未偵測到筆時就能操作，並 SHALL 顯示目前是開或關。開關 SHALL 切換既有的 `penMode`，不得另建一套模式狀態。
+系統 SHALL 在三點「更多工具」選單中提供筆模式開關，與雷射筆、畫框同一層。開關 SHALL 在尚未偵測到筆時就能操作，並 SHALL 顯示目前是開或關。開關 SHALL 切換既有的 `penMode`，不得另建一套模式狀態。列高 SHALL 跟隨設定頁的尺寸段位（預設大），MUST NOT 寫死成單一 44px。
 
 #### Scenario: Toggle before a pen is detected
 
@@ -70,6 +70,11 @@
 
 - **WHEN** `penMode` 為 true，使用者再啟動同一個項目
 - **THEN** `penMode` 變為 false，且該項目顯示為關閉
+
+#### Scenario: Row height follows the size tier
+
+- **WHEN** 使用者尚未改過手指模式尺寸
+- **THEN** 更多工具裡的筆模式項目使用段位大的選單高度（40px），而不是固定的 44px
 
 ### Requirement: Pen and finger may touch together
 

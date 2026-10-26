@@ -11,7 +11,7 @@
 - 漢堡選單移出：Excalidraw+ 連結、GitHub、追蹤我們（Follow us）、Discord、Sign up、偏好設定（Preferences，含其全部項目）、主題（Theme）、語系（Language）。
 - 漢堡選單留下即時操作。在說明（Help）與重設畫布（Reset canvas）之間新增「設定」。
 - Canvas 背景（canvas background）這次留在漢堡選單。
-- 設定頁新增「手指模式」類別，只放細節選項。ON／OFF 開關只在三點「更多工具」選單。
+- 設定頁新增「手指模式」類別。ON／OFF 開關只在三點「更多工具」選單。尺寸不是單一的 44px，也不是「要不要放大」的勾選，而是四段：小、中、大、特大。預設是大。小維持上游尺寸。特大才是 44px 觸控目標。
 - 被移走的項目維持原本行為。本變更不新增設定頁與選單整理以外的功能。
 - Excalidraw+ 與 Sign up 只是搬移。要不要整項拿掉，以後再決定。
 

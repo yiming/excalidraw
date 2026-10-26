@@ -70,16 +70,41 @@ Excalidraw+ 與 Sign up 連結 SHALL 被搬到設定頁。本變更 MUST NOT 刪
 - **WHEN** 使用者開啟設定頁中對應的類別
 - **THEN** Excalidraw+ 與 Sign up 連結仍可使用，目的地與搬移前相同
 
-### Requirement: Finger-mode details live in settings
+### Requirement: Finger-mode size uses four tiers
 
-設定頁 SHALL 有「手指模式」類別，用來控制細節選項。該類別 MUST NOT 包含 ON／OFF 開關。開關 SHALL 只出現在三點「更多工具」選單，且該選單項目只是開關。細節選項 SHALL 包含：是否放大按鈕、是否放大物件與變形控制點。其他同類選項可以之後加入，但不得取代這兩項。
+設定頁 SHALL 有「手指模式」類別，以一個尺寸選項同時控制按鈕、選單項目與變形控制點。段位 SHALL 為小、中、大、特大。預設 SHALL 為大。該類別 MUST NOT 包含 ON／OFF 開關。小 SHALL 維持上游尺寸。特大的按鈕 SHALL 為 44px，選單項目高度 SHALL 至少 44px，控制點 SHALL 為 44px。
 
 #### Scenario: Toggle is only in the more-tools menu
 
 - **WHEN** 使用者打開三點「更多工具」選單
-- **THEN** finger mode 的控制只有 ON／OFF 開關，沒有放大按鈕或控制點的細節
+- **THEN** finger mode 的控制只有 ON／OFF 開關，沒有尺寸段位
 
-#### Scenario: Details are in the settings category
+#### Scenario: Default tier is Large
 
-- **WHEN** finger mode 為開啟且使用者在設定頁選擇「手指模式」
-- **THEN** 右側提供是否放大按鈕、是否放大物件與變形控制點，且沒有 ON／OFF 開關
+- **WHEN** 使用者尚未改過手指模式尺寸，並在設定頁打開「手指模式」
+- **THEN** 選中的段位是大，且沒有 ON／OFF 開關
+
+#### Scenario: Small keeps upstream sizes
+
+- **WHEN** 段位是小，且筆模式開啟、主要指標為粗指標
+- **THEN** 一般按鈕為 32px、大按鈕為 36px、選單項目高度為 32px 且間距為 1px、變形控制點為 8px
+
+#### Scenario: Medium sizes
+
+- **WHEN** 段位是中，且筆模式開啟、主要指標為粗指標
+- **THEN** 一般按鈕為 36px、大按鈕為 39px、選單項目高度為 36px 且間距為 4px、變形控制點為 20px
+
+#### Scenario: Large sizes
+
+- **WHEN** 段位是大，且筆模式開啟、主要指標為粗指標
+- **THEN** 一般按鈕為 40px、大按鈕為 42px、選單項目高度為 40px 且間距為 6px、變形控制點為 32px
+
+#### Scenario: Extra large is the 44px target
+
+- **WHEN** 段位是特大，且筆模式開啟、主要指標為粗指標
+- **THEN** 一般按鈕與大按鈕皆為 44px、選單項目高度至少為 44px 且間距為 8px、變形控制點為 44px
+
+#### Scenario: Fine pointer keeps upstream sizes
+
+- **WHEN** 儲存的段位是大或特大，但筆模式為關閉，或主要指標不是粗指標
+- **THEN** 按鈕、選單項目與變形控制點維持上游尺寸

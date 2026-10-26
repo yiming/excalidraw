@@ -19,7 +19,7 @@
 
 - 不改筆模式關閉時的觸控繪圖，也不改滑鼠。
 - 不新增第二套「手指模式」狀態、不改場景檔、不做壓力或傾斜。
-- 不放大變形把手，不加嵌入端 API。
+- 不在本變更做尺寸段位，也不加嵌入端的把手倍率 API。四段尺寸（小、中、大、特大，預設大）寫在 `add-ipad-settings-page`。
 - 不把既有工具列上的筆模式按鈕拿掉。那個按鈕只在 `penDetected` 之後出現，拿掉會改變既有畫面。
 
 ## Decisions
@@ -54,14 +54,14 @@
 
 ### 開關放在更多工具
 
-桌面 `Toolbar` 與手機 `MobileToolbar` 的三點選單都放同一個 `PenModeMenuItem`，緊接在雷射筆之後。使用既有 `DropdownMenu.ItemCheckbox`：勾選圖示加上 `aria-pressed` 表示開或關，`selected` 用現成的選取底色。點下去 `preventDefault`，選單保持打開，手指才看得見狀態切換。列高至少 44px。文案沿用 `toolBar.penMode`，英文與繁體中文改成說明手指會平移與縮放；其他語系暫時留舊譯文。
+桌面 `Toolbar` 與手機 `MobileToolbar` 的三點選單都放同一個 `PenModeMenuItem`，緊接在雷射筆之後。使用既有 `DropdownMenu.ItemCheckbox`：勾選圖示加上 `aria-pressed` 表示開或關，`selected` 用現成的選取底色。點下去 `preventDefault`，選單保持打開，手指才看得見狀態切換。這一列的高度跟隨設定頁的尺寸段位，不在這裡寫死 44px。預設段位是大（選單項目高 40px）。特大才把選單項目加到至少 44px。文案沿用 `toolBar.penMode`，英文與繁體中文改成說明手指會平移與縮放；其他語系暫時留舊譯文。
 
 `togglePenMode(null)` 繼續反轉 `penMode`。不新做 action。
 
 ### 上游 PR 的取捨
 
 - **#12397（手掌不要打斷筆畫）：採納行為，自己寫。** 這就是手指／手掌友善，改動停在指標過濾，風險低。實機手寫筆仍沒測，邏輯用元件測試鎖。
-- **#12146（可放大的變形把手）：只引用，不併入。** 它是嵌入端的 `UIOptions.canvasHandleScale`，預設 1、範圍 1–2，動到選取與線段把手的繪製和命中，約十幾個檔案。筆與觸控本來就有最小把手。API 名稱上游還沒定。這不是筆模式的指標規則，也不算低風險，超出「只做手指友善」的範圍。
+- **#12146（可放大的變形把手）：不併入那份嵌入端 API。** 它是 `UIOptions.canvasHandleScale`，預設 1、範圍 1–2，動到選取與線段把手的繪製和命中。控制點變大改由設定頁的四段尺寸負責（預設大為 32px，特大為 44px），不是宿主倍率。像素與任務在 `add-ipad-settings-page`。
 
 ### 長按選單
 
