@@ -10,37 +10,44 @@
 - `packages/excalidraw/types.ts` 的 `openDialog` 已有未使用的 `"settings"`，可以沿用。
 - zh-TW 缺少或空白的字串包括 Input／Trackpad／Mouse（`labels.inputDevice`、`inputDeviceTrackpad`、`inputDeviceMouse`）、Show hints（`labels.showHints`）、Sign up（`labels.signUp` 為空）。`labels.signIn` 也是空的。
 - 三點選單是工具列的 extra tools（`toolBar.extraTools`）。
+- 右上角宣傳是 `excalidraw-app/App.tsx` 裡 `.excalidraw-ui-top-right` 的 `ExcalidrawPlusPromoBanner`。
+- 選單裡的 GitHub 連結目前指向 `https://github.com/excalidraw/excalidraw`（`DefaultItems.tsx` 的 `Socials`）。
 
 ## Goals / Non-Goals
 
 **Goals:**
 
 - 全螢幕設定頁，左側類別、右側內容。
-- 把指定項目移出漢堡選單，並在說明與重設畫布之間放「設定」。
+- 把上游致謝連結集中到 Special Thanks To，並在說明與重設畫布之間放「設定」。
 - 「手指模式」類別承載細節選項。ON／OFF 只留在三點選單。
 
 **Non-Goals:**
 
 - 不新增設定頁與選單整理以外的功能。
 - 不改變被移項目的既有行為。
-- 不在本變更決定 Excalidraw+／Sign up 要留還是刪。
-- 不在本變更實作 finger mode 的主行為。主提案在 `finger-mode` 分支。
+- 不刪除 Excalidraw+、GitHub、追蹤我們、Discord、Sign up。
+- 不把這五個連結放進關於或其他類別，也不另做第二個致謝頁。
+- 不另加一條 GitHub 網址；致謝句是普通文字，出處用頁上既有的 GitHub 連結。
+- 不改命令面板、歡迎畫面、側欄裡既有的 Excalidraw+ 出現位置。這次指定的是漢堡選單與右上角宣傳列。
+- 不在本變更實作 finger mode 的主行為。主提案在 `finger-mode` 分支，以後可能自帶這份變更的版本。
 - 不把 Canvas 背景移出漢堡選單。
 
 ## Decisions
 
 - 版面比照 iPad 設定 app：左清單、右內容。
 - 窄寬度可以改成先清單、再內容。這是設計考量，不是本變更已鎖定的行為。
-- 移出漢堡選單的項目：
-  - Excalidraw+ 連結
-  - GitHub
+- 左側清單包含：Special Thanks To（標籤原樣，只佔一個項目）、關於、手指模式、偏好設定、主題、語系。
+- Special Thanks To 這一頁的上游連結只有下面五個，不刪除：
+  - Excalidraw+
+  - GitHub（既有連結，指向 `https://github.com/excalidraw/excalidraw`）
   - 追蹤我們（Follow us）
   - Discord
-  - Sign up（同一項在已登入時顯示 Sign in，一併移走）
-  - 偏好設定及其全部項目
-  - 主題（Theme）
-  - 語系（Language）
-- 漢堡選單保留即時操作，例如開啟、儲存、匯出、即時協作、命令面板、搜尋、說明、重設畫布。開發用的 Visual Debug 不在搬移清單，維持原處。
+  - Sign up（同一項在已登入時顯示 Sign in，仍是這一個連結，不是第六個）
+- 同一頁有一句感謝 Excalidraw 原作者的普通文字。不再另加 GitHub 網址，上面的 GitHub 連結就是出處。
+- 關於與其他類別都不放這五個連結。
+- 這五個連結離開漢堡選單，也離開右上角宣傳列。
+- 偏好設定、主題、語系各自留在自己的類別。
+- 漢堡選單沒有這些連結，只留即時操作，例如開啟、儲存、匯出、即時協作、命令面板、搜尋、說明、重設畫布。開發用的 Visual Debug 不在搬移清單，維持原處。
 - 「設定」放在說明下面、重設畫布上面。
 - finger mode 是兩層，已決定，不再是開放問題：
   - 三點「更多工具」選單只放 ON／OFF 開關。
@@ -51,6 +58,6 @@
 ## Risks / Trade-offs
 
 - 開放問題：Canvas 背景是否以後也移入設定頁。現在留在漢堡選單。
-- 開放問題：Excalidraw+ 與 Sign up 連結以後是保留還是整項移除。本變更只搬移。
+- 已決定：Excalidraw+ 與 Sign up 不刪除，與 GitHub、追蹤我們、Discord 一起只放在 Special Thanks To。
 - 開放問題：「手指模式」除了放大按鈕、放大控制點之外，還有哪些同類選項。
 - 偏好設定目前在函式庫選單，搬到 app 的設定頁時要保持勾選與即時生效，避免改成另一套儲存。

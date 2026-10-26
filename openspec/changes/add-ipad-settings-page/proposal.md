@@ -8,12 +8,14 @@
 ## What Changes
 
 - 新增全螢幕設定頁：左側類別清單，右側內容。窄螢幕是否改成先清單、再內容，只是設計考量。
-- 漢堡選單移出：Excalidraw+ 連結、GitHub、追蹤我們（Follow us）、Discord、Sign up、偏好設定（Preferences，含其全部項目）、主題（Theme）、語系（Language）。
-- 漢堡選單留下即時操作。在說明（Help）與重設畫布（Reset canvas）之間新增「設定」。
-- Canvas 背景（canvas background）這次留在漢堡選單。
-- 設定頁新增「手指模式」類別，只放細節選項。ON／OFF 開關只在三點「更多工具」選單。
+- 左側清單包含一個項目，標籤原樣為 Special Thanks To。Excalidraw+、GitHub、追蹤我們（Follow us）、Discord、Sign up 只放在這一頁，不散到關於或其他類別，也不刪除。
+- 這一頁另有一句感謝 Excalidraw 原作者的文字。不另加 GitHub 網址；頁上既有的 GitHub 連結就是出處。
+- 這五個連結離開漢堡選單，也離開右上角宣傳列。
+- 漢堡選單只留即時操作。在說明（Help）與重設畫布（Reset canvas）之間新增「設定」。
+- 偏好設定、主題、語系各自成為左側類別。Canvas 背景（canvas background）這次留在漢堡選單。
+- 設定頁另有「手指模式」類別，只放細節選項。ON／OFF 開關只在三點「更多工具」選單。
 - 被移走的項目維持原本行為。本變更不新增設定頁與選單整理以外的功能。
-- Excalidraw+ 與 Sign up 只是搬移。要不要整項拿掉，以後再決定。
+- 實作在 `finger-mode` 分支。該分支以後可能自帶這份變更的版本，用語以這裡為準。
 
 ## Capabilities
 
