@@ -223,7 +223,29 @@
     "fingerModeScaleHandle": "Scale handle",
     "fingerModeRotateHandle": "Rotate handle",
     "themeAndLanguage": "Theme and language",
-    "specialThanksSentence": "Special thanks to the original Excalidraw authors."
+    "specialThanksSentence": "Special thanks to the original Excalidraw authors.",
+    "workspace": "Workspace"
+  },
+  "workspace": {
+    "newFile": "New file",
+    "type": "Type",
+    "infinite": "Infinite canvas",
+    "slide": "Slide",
+    "pages": "Pages",
+    "paperSize": "Paper size",
+    "create": "Create",
+    "delete": "Delete",
+    "empty": "No local files yet.",
+    "overLimit": "Local storage is over the limit. You can delete old files or export a .excalidraw file.",
+    "export": "Export",
+    "paper": {
+      "16x9Landscape": "16:9 landscape",
+      "16x9Portrait": "16:9 portrait",
+      "4x3Landscape": "4:3 landscape",
+      "4x3Portrait": "4:3 portrait",
+      "a4Landscape": "A4 landscape",
+      "a4Portrait": "A4 portrait"
+    }
   },
   "elementLink": {
     "title": "Link to object",

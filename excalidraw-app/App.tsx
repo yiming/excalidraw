@@ -147,6 +147,7 @@ import { ExcalidrawPlusIframeExport } from "./ExcalidrawPlusIframeExport";
 import "./index.scss";
 
 import { AppSettings } from "./components/AppSettings";
+import { WorkspaceDialog } from "./components/WorkspaceDialog";
 import { AppSidebar } from "./components/AppSidebar";
 
 import type { CollabAPI } from "./collab/Collab";
@@ -1041,6 +1042,7 @@ const ExcalidrawWrapper = () => {
           isCollabEnabled={isCollabAvailable}
         />
         <AppSettings theme={appTheme} />
+        <WorkspaceDialog />
         <OverwriteConfirmDialog>
           <OverwriteConfirmDialog.Actions.ExportToImage />
           <OverwriteConfirmDialog.Actions.SaveToDisk />

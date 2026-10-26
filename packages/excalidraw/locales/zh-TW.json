@@ -217,7 +217,29 @@
     "fingerModeScaleHandle": "縮放控制點",
     "fingerModeRotateHandle": "旋轉控制點",
     "themeAndLanguage": "主題與語系",
-    "specialThanksSentence": "感謝 Excalidraw 原作者開源這個專案。"
+    "specialThanksSentence": "感謝 Excalidraw 原作者開源這個專案。",
+    "workspace": "工作區"
+  },
+  "workspace": {
+    "newFile": "新建檔案",
+    "type": "類型",
+    "infinite": "無限畫布",
+    "slide": "投影片",
+    "pages": "頁數",
+    "paperSize": "紙張尺寸",
+    "create": "建立",
+    "delete": "刪除",
+    "empty": "還沒有本地檔案。",
+    "overLimit": "本地儲存已超過上限。可以刪除舊檔，或匯出成 .excalidraw 檔。",
+    "export": "匯出",
+    "paper": {
+      "16x9Landscape": "16:9 橫式",
+      "16x9Portrait": "16:9 直式",
+      "4x3Landscape": "4:3 橫式",
+      "4x3Portrait": "4:3 直式",
+      "a4Landscape": "A4 橫式",
+      "a4Portrait": "A4 直式"
+    }
   },
   "elementLink": {
     "title": "連結至物件",
