@@ -139,18 +139,24 @@ export const getTransformHandlesFromCoords = (
   margin = 4,
   spacing = DEFAULT_TRANSFORM_HANDLE_SPACING,
   handleSize?: number,
+  rotationHandleSize?: number,
 ): TransformHandles => {
   const size = handleSize ?? transformHandleSizes[pointerType];
+  const rotateSize = rotationHandleSize ?? size;
   const handleWidth = size / zoom.value;
   const handleHeight = size / zoom.value;
+  const rotateWidth = rotateSize / zoom.value;
+  const rotateHeight = rotateSize / zoom.value;
 
   const handleMarginX = size / zoom.value;
   const handleMarginY = size / zoom.value;
+  const rotateMarginY = rotateSize / zoom.value;
 
   const width = x2 - x1;
   const height = y2 - y1;
   const dashedLineMargin = margin / zoom.value;
   const centeringOffset = (size - spacing * 2) / (2 * zoom.value);
+  const rotateCenteringOffset = (rotateSize - spacing * 2) / (2 * zoom.value);
 
   const transformHandles: TransformHandles = {
     nw: omitSides.nw
@@ -200,14 +206,14 @@ export const getTransformHandlesFromCoords = (
     rotation: omitSides.rotation
       ? undefined
       : generateTransformHandle(
-          x1 + width / 2 - handleWidth / 2,
+          x1 + width / 2 - rotateWidth / 2,
           y1 -
             dashedLineMargin -
-            handleMarginY +
-            centeringOffset -
+            rotateMarginY +
+            rotateCenteringOffset -
             ROTATION_RESIZE_HANDLE_GAP / zoom.value,
-          handleWidth,
-          handleHeight,
+          rotateWidth,
+          rotateHeight,
           cx,
           cy,
           angle,
@@ -277,6 +283,7 @@ export const getTransformHandles = (
   pointerType: PointerType = "mouse",
   omitSides: { [T in TransformHandleType]?: boolean } = DEFAULT_OMIT_SIDES,
   handleSize?: number,
+  rotationHandleSize?: number,
 ): TransformHandles => {
   // so that when locked element is selected (especially when you toggle lock
   // via keyboard) the locked element is visually distinct, indicating
@@ -325,6 +332,7 @@ export const getTransformHandles = (
     margin,
     isImageElement(element) ? 0 : undefined,
     handleSize,
+    rotationHandleSize,
   );
 };
 

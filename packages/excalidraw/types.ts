@@ -440,16 +440,18 @@ export interface AppState {
     initialized: boolean;
   };
 
-  // Pen handling
+  // Pen handling. Independent of finger mode.
   penMode: boolean;
   penDetected: boolean;
-  /**
-   * Size tier for buttons, menu rows, and transform handles while pen mode
-   * is on and the primary pointer is coarse. Default is `"large"`.
-   */
-  fingerModeSize: "small" | "medium" | "large" | "xl";
-  /** Hide shortcut letters and the hint viewer while finger targets are on. */
-  fingerModeHideShortcuts: boolean;
+  /** Enlarge listed UI targets. Does not change pointer, pen, or touch gestures. */
+  fingerMode: boolean;
+  /** Per-item size tier. `"small"` is the upstream size. Default is `"large"`. */
+  fingerModeDefaultButton: "small" | "medium" | "large" | "xl";
+  fingerModeLgButton: "small" | "medium" | "large" | "xl";
+  fingerModeMenuItem: "small" | "medium" | "large" | "xl";
+  fingerModeMenuGap: "small" | "medium" | "large" | "xl";
+  fingerModeScaleHandle: "small" | "medium" | "large" | "xl";
+  fingerModeRotateHandle: "small" | "medium" | "large" | "xl";
 
   exportBackground: boolean;
   exportEmbedScene: boolean;

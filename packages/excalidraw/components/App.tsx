@@ -304,7 +304,6 @@ import { exportCanvas, loadFromBlob } from "../data";
 import Library, { distributeLibraryItemsOnSquareGrid } from "../data/library";
 import { restoreAppState, restoreElements } from "../data/restore";
 import { getCenter, getDistance } from "../gesture";
-
 import {
   copyElementRenderOverrides,
   getElementRenderOffsets,
@@ -371,18 +370,7 @@ import {
   resolveColorTarget,
 } from "../actions/colorTargets";
 
-import {
-  fingerMayUseTool,
-  fingerModeTargetsActive,
-  FINGER_MODE_SIZES,
-  guardPointerListener,
-  isCoarsePointer,
-  pinchZoomScaleFactor,
-  shouldAbortFreedrawForExtraTouch,
-  shouldIgnoreConcurrentTouch,
-  shouldReleaseTouchGestureForPen,
-  shouldStartSingleFingerPan,
-} from "./penModePointer";
+import { fingerModeStyle, isCoarsePointer } from "./fingerMode";
 
 import ConvertElementTypePopup, {
   getConversionTypeFromElements,
@@ -594,14 +582,7 @@ const gesture: Gesture = {
   initialScale: null,
 };
 
-/** pointer types for `gesture.pointers`, kept off the public gesture values */
-const gesturePointerTypes = new Map<number, string>();
-
 class App extends React.Component<AppProps, AppState> {
-  /** pen currently down; synchronous so a palm in the same turn is ignored */
-  private activePenPointerId: number | null = null;
-  /** the in-progress freedraw was started by a pen, so a second touch must not abort it */
-  private strokePenAuthored = false;
   canvas: AppClassProperties["canvas"];
   interactiveCanvas: AppClassProperties["interactiveCanvas"] = null;
   public sessionExportThemeOverride: AppState["theme"] | undefined;
@@ -2429,35 +2410,18 @@ class App extends React.Component<AppProps, AppState> {
             "excalidraw--viewport-status-label":
               !!this.props.viewportStatusFrame?.label,
             "excalidraw--zen-mode": this.state.zenModeEnabled,
-            "excalidraw--finger-targets": this.fingerTargetsActive(),
+            "excalidraw--finger-targets": this.state.fingerMode,
             "excalidraw--finger-quiet":
-              this.state.penMode &&
-              this.state.fingerModeHideShortcuts &&
-              isCoarsePointer(this.ownerWindow),
+              this.state.fingerMode && isCoarsePointer(this.ownerWindow),
           },
         )}
         style={{
           ["--ui-pointerEvents" as any]: shouldBlockPointerEvents
             ? POINTER_EVENTS.disabled
             : POINTER_EVENTS.enabled,
-          ...(this.fingerTargetsActive()
-            ? {
-                ["--default-button-size" as any]: `${
-                  FINGER_MODE_SIZES[this.state.fingerModeSize].defaultButton
-                }px`,
-                ["--lg-button-size" as any]: `${
-                  FINGER_MODE_SIZES[this.state.fingerModeSize].lgButton
-                }px`,
-                ["--finger-menu-item-height" as any]: `${
-                  FINGER_MODE_SIZES[this.state.fingerModeSize].menuItem
-                }px`,
-                ["--finger-menu-gap" as any]: `${
-                  FINGER_MODE_SIZES[this.state.fingerModeSize].menuGap
-                }px`,
-              }
-            : null),
           ["--right-sidebar-width" as any]: `${RIGHT_SIDEBAR_WIDTH}px`,
           ["--zen-mode-transition-duration" as any]: `${ZEN_MODE_TRANSITION_DURATION}ms`,
+          ...(fingerModeStyle(this.state) ?? {}),
         }}
         ref={this.excalidrawContainerRef}
         onDrop={this.isFileDropEnabled() ? this.handleAppOnDrop : undefined}
@@ -3354,9 +3318,6 @@ class App extends React.Component<AppProps, AppState> {
     this.host.setPointerUp(null);
 
     gesture.pointers.clear();
-    gesturePointerTypes.clear();
-    this.activePenPointerId = null;
-    this.strokePenAuthored = false;
     gesture.lastCenter = null;
     gesture.initialDistance = null;
     gesture.initialScale = null;
@@ -4656,7 +4617,6 @@ class App extends React.Component<AppProps, AppState> {
       });
     } else {
       gesture.pointers.clear();
-      gesturePointerTypes.clear();
     }
   };
 
@@ -4800,7 +4760,6 @@ class App extends React.Component<AppProps, AppState> {
 
     const wasMultiTouchGesture = gesture.pointers.size >= 2;
     gesture.pointers.delete(event.pointerId);
-    gesturePointerTypes.delete(event.pointerId);
 
     // the multi-touch viewport gesture just disengaged: release the
     // rubberband that was withheld while it was active
@@ -4863,41 +4822,6 @@ class App extends React.Component<AppProps, AppState> {
         },
       };
     });
-  };
-
-  private fingerTargetsActive = () =>
-    fingerModeTargetsActive({
-      penMode: this.state.penMode,
-      coarsePointer: isCoarsePointer(this.ownerWindow),
-      tier: this.state.fingerModeSize,
-    });
-
-  /** pen mode, including the first pen press before `setState` flushes */
-  private isPenModeEffective = () =>
-    this.state.penMode ||
-    (!this.state.penDetected && this.activePenPointerId != null);
-
-  private shouldIgnorePointer = (event: { pointerType: string }) =>
-    shouldIgnoreConcurrentTouch({
-      pointerType: event.pointerType,
-      penMode: this.isPenModeEffective(),
-      penPointerDown: this.activePenPointerId != null,
-    });
-
-  /** Drop leftover touch pointers so a pen is not stuck inside a two-pointer gesture. */
-  private releaseTrackedTouches = () => {
-    for (const [id, pointerType] of gesturePointerTypes) {
-      if (pointerType === "touch") {
-        gesture.pointers.delete(id);
-        gesturePointerTypes.delete(id);
-      }
-    }
-    if (gesture.pointers.size < 2) {
-      gesture.lastCenter = null;
-      gesture.initialDistance = null;
-      gesture.initialScale = null;
-    }
-    this.pan.end();
   };
 
   togglePenMode = (force: boolean | null) => {
@@ -6930,9 +6854,6 @@ class App extends React.Component<AppProps, AppState> {
   private handleCanvasPointerMove = (
     event: React.PointerEvent<HTMLCanvasElement>,
   ) => {
-    if (this.shouldIgnorePointer(event)) {
-      return;
-    }
     if (!this.isInteractionEnabled()) {
       if (this.isToolSupported(this.state.activeTool.type)) {
         // keep broadcasting the pointer (`props.onPointerUpdate`) between
@@ -7611,9 +7532,6 @@ class App extends React.Component<AppProps, AppState> {
   private handleCanvasPointerDown = (
     event: React.PointerEvent<HTMLElement>,
   ) => {
-    if (this.shouldIgnorePointer(event)) {
-      return;
-    }
     if (
       !this.isInteractionEnabled() &&
       !this.isToolSupported(this.state.activeTool.type)
@@ -7663,20 +7581,6 @@ class App extends React.Component<AppProps, AppState> {
     }
 
     this.maybeCleanupAfterMissingPointerUp(event.nativeEvent);
-    if (
-      shouldReleaseTouchGestureForPen({
-        pointerType: event.pointerType,
-        trackedPointerTypes: Array.from(gesturePointerTypes.values()),
-      })
-    ) {
-      this.releaseTrackedTouches();
-    }
-    if (event.pointerType === "pen") {
-      this.activePenPointerId = event.pointerId;
-      this.strokePenAuthored = true;
-    } else if (event.pointerType !== "touch") {
-      this.strokePenAuthored = false;
-    }
     // laser pointer is a presentation aid, not an edit — using it while
     // following someone shouldn't break follow
     if (this.state.activeTool.type !== "laser") {
@@ -7730,15 +7634,6 @@ class App extends React.Component<AppProps, AppState> {
       this.state.newElement &&
       this.state.newElement.type === "freedraw"
     ) {
-      if (
-        !shouldAbortFreedrawForExtraTouch({
-          pointerType: event.pointerType,
-          newElementType: this.state.newElement.type,
-          penAuthored: this.strokePenAuthored,
-        })
-      ) {
-        return;
-      }
       const element = this.state.newElement as ExcalidrawFreeDrawElement;
       this.updateScene({
         ...(element.points.length < 10
@@ -7789,20 +7684,6 @@ class App extends React.Component<AppProps, AppState> {
           currentItemStrokeVariability: "variable",
         };
       });
-    }
-
-    if (!fingerMayUseTool(this.isPenModeEffective(), event.pointerType)) {
-      if (
-        shouldStartSingleFingerPan({
-          penMode: this.isPenModeEffective(),
-          pointerType: event.pointerType,
-          trackedPointerCount: gesture.pointers.size,
-          penPointerDown: this.activePenPointerId != null,
-        })
-      ) {
-        this.pan.start(event, { force: true });
-      }
-      return;
     }
 
     if (
@@ -8050,24 +7931,11 @@ class App extends React.Component<AppProps, AppState> {
       );
     }
 
-    const penStroke = event.pointerType === "pen";
-    const onPointerMove = guardPointerListener(
-      this.onPointerMoveFromPointerDownHandler(pointerDownState),
-      (moveEvent: PointerEvent) => this.shouldIgnorePointer(moveEvent),
-    );
+    const onPointerMove =
+      this.onPointerMoveFromPointerDownHandler(pointerDownState);
 
-    const onPointerUpFromPointerDown =
+    const onPointerUp =
       this.onPointerUpFromPointerDownHandler(pointerDownState);
-    const onPointerUp = (upEvent: PointerEvent) => {
-      if (this.shouldIgnorePointer(upEvent)) {
-        return;
-      }
-      if (penStroke) {
-        this.activePenPointerId = null;
-        this.strokePenAuthored = false;
-      }
-      onPointerUpFromPointerDown(upEvent);
-    };
 
     const onKeyDown = this.onKeyDownFromPointerDownHandler(pointerDownState);
     const onKeyUp = this.onKeyUpFromPointerDownHandler(pointerDownState);
@@ -8097,13 +7965,6 @@ class App extends React.Component<AppProps, AppState> {
   private handleCanvasPointerCancel = (
     event: React.PointerEvent<HTMLCanvasElement>,
   ) => {
-    if (this.shouldIgnorePointer(event)) {
-      return;
-    }
-    if (event.pointerId === this.activePenPointerId) {
-      this.activePenPointerId = null;
-      this.strokePenAuthored = false;
-    }
     this.removePointer(event);
     this.maybeCleanupAfterMissingPointerUp(event.nativeEvent);
   };
@@ -8111,13 +7972,6 @@ class App extends React.Component<AppProps, AppState> {
   private handleCanvasPointerUp = (
     event: React.PointerEvent<HTMLCanvasElement>,
   ) => {
-    if (this.shouldIgnorePointer(event)) {
-      return;
-    }
-    if (event.pointerId === this.activePenPointerId) {
-      this.activePenPointerId = null;
-      this.strokePenAuthored = false;
-    }
     if (!this.isInteractionEnabled()) {
       if (this.isLinksEnabled() || this.isEmbedsEnabled()) {
         this.handleInteractiveContentPointerUp(event);
@@ -8170,9 +8024,6 @@ class App extends React.Component<AppProps, AppState> {
   private maybeOpenContextMenuAfterPointerDownOnTouchDevices = (
     event: React.PointerEvent<HTMLElement>,
   ): void => {
-    if (event.pointerType === "touch" && this.isPenModeEffective()) {
-      return;
-    }
     // deal with opening context menu on touch devices
     if (event.pointerType === "touch") {
       invalidateContextMenu = false;
@@ -8219,7 +8070,6 @@ class App extends React.Component<AppProps, AppState> {
       x: event.clientX,
       y: event.clientY,
     });
-    gesturePointerTypes.set(event.pointerId, event.pointerType);
 
     if (gesture.pointers.size === 2) {
       gesture.lastCenter = getCenter(gesture.pointers);
@@ -8257,11 +8107,10 @@ class App extends React.Component<AppProps, AppState> {
       gesture.lastCenter = center;
 
       const distance = getDistance(Array.from(gesture.pointers.values()));
-      const scaleFactor = pinchZoomScaleFactor({
-        distance,
-        initialDistance: gesture.initialDistance,
-        pointerTypes: Array.from(gesturePointerTypes.values()),
-      });
+      const scaleFactor =
+        this.state.activeTool.type === "freedraw" && this.state.penMode
+          ? 1
+          : distance / gesture.initialDistance;
 
       const nextZoom = scaleFactor
         ? getNormalizedZoom(initialScale * scaleFactor)

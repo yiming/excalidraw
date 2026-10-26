@@ -1872,6 +1872,15 @@ export const eraser = createIcon(
   <path d="M480 416C497.7 416 512 430.3 512 448C512 465.7 497.7 480 480 480H150.6C133.7 480 117.4 473.3 105.4 461.3L25.37 381.3C.3786 356.3 .3786 315.7 25.37 290.7L258.7 57.37C283.7 32.38 324.3 32.38 349.3 57.37L486.6 194.7C511.6 219.7 511.6 260.3 486.6 285.3L355.9 416H480zM265.4 416L332.7 348.7L195.3 211.3L70.63 336L150.6 416L265.4 416z" />,
 );
 
+export const fingerIcon = createIcon(
+  <g>
+    <path d="M10 11V5.5a1.5 1.5 0 0 1 3 0V11" />
+    <path d="M13 11V8a1.5 1.5 0 0 1 3 0v5.5" />
+    <path d="M10 11.5c-1 .4-2 1.4-2 2.7V16a4 4 0 0 0 4 4h1a4 4 0 0 0 4-4v-2" />
+  </g>,
+  tablerIconProps,
+);
+
 export const handIcon = createIcon(
   <g strokeWidth={1.25}>
     <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
