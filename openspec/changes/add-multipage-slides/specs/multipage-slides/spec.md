@@ -64,17 +64,17 @@
 
 ### Requirement: Initial page count has a fixed range
 
-新建 slide 時，使用者 SHALL 選擇起始頁數。頁數 MUST 至少為 1，至多為 30。預設 SHALL 為 10。無限畫布 MUST NOT 提供頁數選擇。
+新建 slide 時，使用者 SHALL 選擇起始頁數。頁數 MUST 至少為 1，至多為 20。預設 SHALL 為 10。無限畫布 MUST NOT 提供頁數選擇。
 
 #### Scenario: Default page count is ten
 
 - **WHEN** 使用者建立 slide 且尚未改頁數
 - **THEN** 起始頁數是 10
 
-#### Scenario: The count stays inside one to thirty
+#### Scenario: The count stays inside one to twenty
 
 - **WHEN** 使用者選擇 slide 的起始頁數
-- **THEN** 只能選 1 到 30
+- **THEN** 只能選 1 到 20
 
 #### Scenario: Infinite canvas has no page-count choice
 
