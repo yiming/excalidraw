@@ -1987,6 +1987,7 @@ const _renderInteractiveScene = ({
         "mouse", // when we render we don't know which pointer type so use mouse,
         getOmitSidesForEditorInterface(editorInterface),
         renderConfig.transformHandleSize,
+        renderConfig.rotationHandleSize,
       );
       if (
         !appState.viewModeEnabled &&
@@ -2055,6 +2056,10 @@ const _renderInteractiveScene = ({
               rotation: true,
             }
           : getOmitSidesForEditorInterface(editorInterface),
+        undefined,
+        undefined,
+        renderConfig.transformHandleSize,
+        renderConfig.rotationHandleSize,
       );
       if (selectedElements.some((element) => !element.locked)) {
         renderTransformHandles(

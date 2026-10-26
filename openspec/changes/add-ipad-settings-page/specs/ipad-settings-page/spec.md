@@ -43,6 +43,20 @@
 - **WHEN** 使用者打開主題與語系那一頁
 - **THEN** 手指模式的開關列與各尺寸選擇都在主題與語系的下面
 
+### Requirement: Category order
+
+左側清單順序 SHALL 為 Special Thanks To、偏好設定、主題與語系、關於。合併頁的名稱 SHALL 用 `labels.themeAndLanguage`。返回按鈕的可見文字 SHALL 用 `buttons.back`。清單 MUST NOT 再有 Close。
+
+#### Scenario: The list order is thanks, preferences, theme and language, about
+
+- **WHEN** 使用者開啟設定
+- **THEN** 左側依序是這四項，沒有主題子頁、語系子頁、手指模式子頁或 Close
+
+#### Scenario: The back button uses the back label
+
+- **WHEN** 使用者開啟設定
+- **THEN** 左上角按鈕的文字來自 `buttons.back`，不是 Close
+
 ### Requirement: About section
 
 設定 SHALL 有「關於」區段。這個區段 MUST NOT 包含 Excalidraw+、GitHub、追蹤我們、Discord、Sign up。
@@ -114,17 +128,17 @@
 
 ### Requirement: Finger mode row in settings
 
-設定頁的手指模式開關 SHALL 與三點選單同一版面。左側 SHALL 是手指圖示，且 MUST NOT 有勾選。中間 SHALL 只有「手指模式」。右側 SHALL 只有開／關，用 `Switch` 或「開」「關」。該列 MUST NOT 顯示快捷鍵、副標或其他說明。各尺寸項的值與「觸控時隱藏快捷鍵提示」SHALL 依 `add-finger-mode` 的 `finger-mode` 規格。
+設定頁的手指模式開關 SHALL 與三點選單同一版面。左側 SHALL 是手指圖示，且 MUST NOT 有勾選。中間 SHALL 只有「手指模式」。右側 SHALL 只有 `Switch`。該列 MUST NOT 顯示快捷鍵、副標、「開」「關」文字或其他說明。開關在各尺寸選擇之上。各尺寸項的值與「觸控時隱藏快捷鍵提示」SHALL 依 `add-finger-mode` 的 `finger-mode` 規格。
 
 #### Scenario: Settings finger row is icon, label, and state
 
 - **WHEN** 使用者在設定頁看到手指模式開關
-- **THEN** 左是手指圖示、中是「手指模式」、右是開或關，沒有勾選、快捷鍵、副標或說明
+- **THEN** 左是手指圖示、中是「手指模式」、右是 `Switch`，沒有勾選、快捷鍵、副標或說明
 
 #### Scenario: The settings row shows off
 
 - **WHEN** 手指模式為關，使用者查看設定頁的這一列
-- **THEN** 右側表示關
+- **THEN** 右側的 `Switch` 為關
 
 ### Requirement: About category describes this fork
 
@@ -219,10 +233,10 @@ Excalidraw+ 與 Sign up 連結 SHALL 被搬到 Special Thanks To。本變更 MUS
 - **WHEN** 查看 zh-TW 與 zh-CN
 - **THEN** `labels.fingerModeDefaultButton`、`labels.fingerModeLargeButton`、`labels.fingerModeMenuItemHeight`、`labels.fingerModeMenuItemGap`、`labels.fingerModeScaleHandle`、`labels.fingerModeRotateHandle` 在兩個檔裡都有譯文
 
-#### Scenario: Text on and off states are translated when used
+#### Scenario: The merged page and the back button are translated
 
-- **WHEN** 開／關用文字而不是 `Switch`
-- **THEN** 兩個中文語系檔都有 `labels.fingerModeOn` 與 `labels.fingerModeOff`
+- **WHEN** 查看 zh-TW 與 zh-CN
+- **THEN** `labels.themeAndLanguage` 與 `buttons.back` 在兩個檔裡都有譯文
 
 #### Scenario: The thanks title has a Chinese translation
 

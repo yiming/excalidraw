@@ -71,6 +71,48 @@
 - **WHEN** 使用者還沒有改過旋轉控制點
 - **THEN** 旋轉控制點選中的是大
 
+### Requirement: Rotate handle uses the scale-handle pixels
+
+旋轉控制點的像素 SHALL 與縮放控制點相同：小 8、中 20、大 32、特大 44。兩項的選擇 MUST 仍然分開。
+
+#### Scenario: Large rotate handle is 32px
+
+- **WHEN** 手指模式為開，旋轉控制點是大
+- **THEN** 旋轉控制點為 32px
+
+#### Scenario: Extra large rotate handle is 44px
+
+- **WHEN** 手指模式為開，旋轉控制點是特大，縮放控制點仍是大
+- **THEN** 旋轉控制點為 44px，縮放控制點為 32px
+
+### Requirement: Finger mode is its own setting
+
+手指模式 SHALL 單獨持久化，與上游 `penMode` 無關。開關 MUST NOT 改 `penMode`。手指模式為開時 SHALL 套用各項尺寸，不限觸控，也不看 `penMode`。為關時維持上游尺寸。
+
+#### Scenario: The switch does not change pen mode
+
+- **WHEN** 使用者打開手指模式
+- **THEN** `penMode` 維持原值，尺寸仍依各項自己的選擇套用
+
+#### Scenario: Enlargement does not wait for a coarse pointer
+
+- **WHEN** 手指模式為開，且目前不是觸控
+- **THEN** 各項仍用自己選中的尺寸
+
+### Requirement: Finger mode does not change canvas gestures
+
+手指模式 MUST NOT 改指標、筆或觸控的畫布行為。單指平移、筆按下時忽略手指，以及對捏合縮放的改動，都不是這個模式。這些行為 SHALL 與上游相同，上游 `penMode` 也保留。
+
+#### Scenario: One finger does not pan because finger mode is on
+
+- **WHEN** 手指模式為開，上游筆模式為開，工具是自由畫
+- **THEN** 單指拖曳不因此平移畫布，也不因此畫出筆畫
+
+#### Scenario: Pinch zoom stays upstream
+
+- **WHEN** 手指模式為開，上游筆模式為開，工具是自由畫，使用者雙指捏合
+- **THEN** 縮放與上游筆模式相同，不因手指模式改變
+
 ### Requirement: Shortcut hints hide on touch
 
 手指模式為開且目前是觸控時，系統 SHALL 隱藏快捷鍵提示。手指模式為關時，快捷鍵提示 SHALL 維持上游。這個行為 MUST NOT 做成另一個設定項。
@@ -87,24 +129,24 @@
 
 ### Requirement: Finger mode row shows icon, label, and on or off
 
-三點「更多工具」選單與設定頁 SHALL 各有一列手指模式開關，兩列版面相同。左側 SHALL 是手指圖示，且 MUST NOT 有勾選。中間的標籤 SHALL 只有「手指模式」，MUST NOT 是「手指平移與縮放」或 “Pen mode - finger pans and zooms”。右側 SHALL 只有開／關，用 `Switch` 或「開」「關」文字。該列 MUST NOT 再顯示快捷鍵、副標或其他說明。
+三點「更多工具」選單與設定頁 SHALL 各有一列手指模式開關，兩列版面相同。左側 SHALL 是手指圖示，且 MUST NOT 有勾選。中間的標籤 SHALL 只有「手指模式」，MUST NOT 是「手指平移與縮放」或 “Pen mode - finger pans and zooms”。右側 SHALL 只有 Excalidraw 的 `Switch`。該列 MUST NOT 再顯示快捷鍵、副標、「開」「關」文字或其他說明。
 
 #### Scenario: Three-dot row has no checkmark and no shortcut
 
 - **WHEN** 使用者打開三點「更多工具」
-- **THEN** 手指模式列的左是手指圖示、中是「手指模式」、右是開或關，沒有勾選，也沒有快捷鍵
+- **THEN** 手指模式列的左是手指圖示、中是「手指模式」、右是 `Switch`，沒有勾選，也沒有快捷鍵
 
 #### Scenario: Settings row matches the menu row
 
 - **WHEN** 使用者在設定頁看到手指模式開關
-- **THEN** 這一列同樣是左手指圖示、中「手指模式」、右開或關，沒有勾選、快捷鍵、副標或說明
+- **THEN** 這一列同樣是左手指圖示、中「手指模式」、右是 `Switch`，沒有勾選、快捷鍵、副標或說明
 
 #### Scenario: The row shows the current state
 
 - **WHEN** 手指模式為開，使用者看三點選單或設定頁的這一列
-- **THEN** 右側表示開
+- **THEN** 右側的 `Switch` 為開
 
 #### Scenario: Turning it off updates the indicator
 
 - **WHEN** 手指模式為開，使用者從這一列把它關掉
-- **THEN** 右側改為關，標籤仍是「手指模式」
+- **THEN** 右側的 `Switch` 改為關，標籤仍是「手指模式」

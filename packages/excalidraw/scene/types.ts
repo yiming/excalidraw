@@ -99,8 +99,10 @@ export type InteractiveCanvasRenderConfig = {
   // extra options passed to the renderer
   // ---------------------------------------------------------------------------
   renderScrollbars?: boolean;
-  /** Draw transform handles at this CSS-pixel size instead of the mouse default. */
+  /** Draw scale handles at this CSS-pixel size instead of the pointer-type size. */
   transformHandleSize?: number;
+  /** Draw the rotate handle at this CSS-pixel size. Falls back to the scale size. */
+  rotationHandleSize?: number;
 };
 
 export type RenderInteractiveSceneCallback = {

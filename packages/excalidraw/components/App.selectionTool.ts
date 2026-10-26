@@ -78,7 +78,7 @@ import {
 
 import { snapDraggedElements, snapResizingElements } from "../snapping";
 
-import { isCoarsePointer, resolveFingerModeHandleSize } from "./penModePointer";
+import { fingerModeHandleSize } from "./fingerMode";
 
 import { selectGroupsForSelectedElements } from "./App.selection";
 
@@ -1257,11 +1257,14 @@ export class AppSelectionTool {
       ) {
         return null;
       }
-      const handleSize = resolveFingerModeHandleSize({
-        penMode: state.penMode,
-        coarsePointer: isCoarsePointer(this.app.ownerWindow),
-        tier: state.fingerModeSize,
-      });
+      const handleSize = fingerModeHandleSize(
+        state.fingerMode,
+        state.fingerModeScaleHandle,
+      );
+      const rotationHandleSize = fingerModeHandleSize(
+        state.fingerMode,
+        state.fingerModeRotateHandle,
+      );
       const elementWithTransformHandleType = getElementWithTransformHandleType(
         this.app.scene.getNonDeletedElements(),
         state,
@@ -1272,6 +1275,7 @@ export class AppSelectionTool {
         this.app.scene.getNonDeletedElementsMap(),
         editorInterface,
         handleSize,
+        rotationHandleSize,
       );
       return elementWithTransformHandleType?.transformHandleType
         ? {
@@ -1283,11 +1287,14 @@ export class AppSelectionTool {
     }
 
     if (selectedElements.length > 1) {
-      const handleSize = resolveFingerModeHandleSize({
-        penMode: state.penMode,
-        coarsePointer: isCoarsePointer(this.app.ownerWindow),
-        tier: state.fingerModeSize,
-      });
+      const handleSize = fingerModeHandleSize(
+        state.fingerMode,
+        state.fingerModeScaleHandle,
+      );
+      const rotationHandleSize = fingerModeHandleSize(
+        state.fingerMode,
+        state.fingerModeRotateHandle,
+      );
       const transformHandleType = getTransformHandleTypeFromCoords(
         getCommonBounds(selectedElements),
         sceneX,
@@ -1296,6 +1303,7 @@ export class AppSelectionTool {
         pointerType,
         editorInterface,
         handleSize,
+        rotationHandleSize,
       );
       return transformHandleType ? { transformHandleType } : null;
     }
