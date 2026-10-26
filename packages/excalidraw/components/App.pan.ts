@@ -97,23 +97,29 @@ export class AppPan {
   };
 
   /** starts a session for the pointerdown if it qualifies; returns whether
-   * it did */
-  start = (event: React.PointerEvent<HTMLElement> | MouseEvent): boolean => {
+   * it did. `force` skips the button and tool checks (pen-mode single-finger
+   * pan) and locks later moves to that pointer. */
+  start = (
+    event: React.PointerEvent<HTMLElement> | MouseEvent,
+    options?: { force?: boolean },
+  ): boolean => {
     const { app } = this;
     // a new press supersedes whatever the previous session left pending
     this.suppressNextContextMenu = false;
     const isSecondary = event.button === POINTER_BUTTON.SECONDARY;
+    const force = !!options?.force;
     if (
       !(
         this.dependencies.getPointerCount() <= 1 &&
-        (((event.button === POINTER_BUTTON.WHEEL ||
-          isSecondary ||
-          (event.button === POINTER_BUTTON.MAIN && this.spaceHeld) ||
-          isHandToolActive(app.state)) &&
-          // reachable while non-interactive when the active tool is allowed
-          // via `interaction.enabled.tools` — panning must remain gated on
-          // `navigation` then
-          (app.isInteractionEnabled() || app.isNavigationEnabled())) ||
+        (force ||
+          ((event.button === POINTER_BUTTON.WHEEL ||
+            isSecondary ||
+            (event.button === POINTER_BUTTON.MAIN && this.spaceHeld) ||
+            isHandToolActive(app.state)) &&
+            // reachable while non-interactive when the active tool is allowed
+            // via `interaction.enabled.tools` — panning must remain gated on
+            // `navigation` then
+            (app.isInteractionEnabled() || app.isNavigationEnabled())) ||
           (app.state.viewModeEnabled && !app.isActiveToolPointerCapturing()))
       )
     ) {
@@ -145,7 +151,12 @@ export class AppPan {
     }
     const { clientX: startX, clientY: startY } = event;
     let { clientX: lastX, clientY: lastY } = event;
+    const forcePointerId =
+      force && "pointerId" in event ? event.pointerId : null;
     const onPointerMove = withBatchedUpdatesThrottled((event: PointerEvent) => {
+      if (forcePointerId != null && event.pointerId !== forcePointerId) {
+        return;
+      }
       if (this.secondary && !this.secondary.engaged) {
         // a right-click until the pointer travels far enough for a drag
         if (

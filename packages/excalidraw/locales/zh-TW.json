@@ -1,7 +1,7 @@
 {
   "labels": {
-    "signUp": "",
-    "signIn": "",
+    "signUp": "註冊",
+    "signIn": "登入",
     "paste": "貼上",
     "pasteAsPlaintext": "以純文字貼上",
     "pasteCharts": "貼上圖表",
@@ -195,7 +195,20 @@
     "boxSelectionContain": "完全包覆",
     "boxSelectionOverlap": "部分重疊",
     "arrowBinding": "箭頭連結",
-    "midpointSnapping": "貼齊中點"
+    "midpointSnapping": "貼齊中點",
+    "showHints": "顯示提示",
+    "inputDevice": "輸入裝置",
+    "inputDeviceTrackpad": "觸控板",
+    "inputDeviceMouse": "滑鼠",
+    "settings": "設定",
+    "fingerMode": "手指模式",
+    "fingerModeSize": "尺寸",
+    "fingerModeSizeSmall": "小",
+    "fingerModeSizeMedium": "中",
+    "fingerModeSizeLarge": "大",
+    "fingerModeSizeExtraLarge": "特大",
+    "fingerModeHideShortcuts": "隱藏快捷鍵提示",
+    "specialThanksSentence": "感謝 Excalidraw 原作者開源這個專案。"
   },
   "elementLink": {
     "title": "連結至物件",
@@ -327,7 +340,7 @@
     "text": "文字",
     "library": "資料庫",
     "lock": "可連續使用選取的工具",
-    "penMode": "筆模式 - 避免觸摸",
+    "penMode": "筆模式 - 手指平移與縮放",
     "link": "為所選的形狀增加\b/更新連結",
     "eraser": "橡皮擦",
     "frame": "框架工具",

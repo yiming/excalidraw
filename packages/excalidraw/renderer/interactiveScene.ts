@@ -1986,6 +1986,7 @@ const _renderInteractiveScene = ({
         elementsMap,
         "mouse", // when we render we don't know which pointer type so use mouse,
         getOmitSidesForEditorInterface(editorInterface),
+        renderConfig.transformHandleSize,
       );
       if (
         !appState.viewModeEnabled &&

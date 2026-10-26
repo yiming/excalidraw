@@ -443,6 +443,13 @@ export interface AppState {
   // Pen handling
   penMode: boolean;
   penDetected: boolean;
+  /**
+   * Size tier for buttons, menu rows, and transform handles while pen mode
+   * is on and the primary pointer is coarse. Default is `"large"`.
+   */
+  fingerModeSize: "small" | "medium" | "large" | "xl";
+  /** Hide shortcut letters and the hint viewer while finger targets are on. */
+  fingerModeHideShortcuts: boolean;
 
   exportBackground: boolean;
   exportEmbedScene: boolean;

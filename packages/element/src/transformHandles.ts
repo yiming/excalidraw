@@ -138,8 +138,9 @@ export const getTransformHandlesFromCoords = (
   omitSides: { [T in TransformHandleType]?: boolean } = {},
   margin = 4,
   spacing = DEFAULT_TRANSFORM_HANDLE_SPACING,
+  handleSize?: number,
 ): TransformHandles => {
-  const size = transformHandleSizes[pointerType];
+  const size = handleSize ?? transformHandleSizes[pointerType];
   const handleWidth = size / zoom.value;
   const handleHeight = size / zoom.value;
 
@@ -275,6 +276,7 @@ export const getTransformHandles = (
   elementsMap: ElementsMap,
   pointerType: PointerType = "mouse",
   omitSides: { [T in TransformHandleType]?: boolean } = DEFAULT_OMIT_SIDES,
+  handleSize?: number,
 ): TransformHandles => {
   // so that when locked element is selected (especially when you toggle lock
   // via keyboard) the locked element is visually distinct, indicating
@@ -322,6 +324,7 @@ export const getTransformHandles = (
     omitSides,
     margin,
     isImageElement(element) ? 0 : undefined,
+    handleSize,
   );
 };
 
