@@ -1,0 +1,122 @@
+name: PoC and Pages template
+
+# Lightweight template. Upstream workflows (test, lint, size-limit, locales,
+# docker, and the rest) are untouched. The existing Deploy GitHub Pages
+# workflow (.github/workflows/deploy-pages.yml) is also untouched.
+#
+# (a) ACTIVE. On a push to a branch named poc/**, and only when poc/** (or
+#     this file) changes, look for poc/*/package.json. If that package
+#     defines a test script, install its own dependencies in a temp copy and
+#     run the script. Otherwise the job succeeds and does nothing.
+#     The temp copy keeps the root Yarn workspaces from absorbing the PoC.
+# (b) DISABLED. Redeploying GitHub Pages from here. Deploy GitHub Pages
+#     already runs on every push to master and on workflow_dispatch, with
+#     concurrency group "pages" and cancel-in-progress false. A second
+#     trigger on the same push would queue another production deployment.
+#     The example at the bottom of this file stays commented out.
+
+on:
+  push:
+    branches:
+      - "poc/**"
+    paths:
+      - "poc/**"
+      - ".github/workflows/poc-and-pages-template.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  poc-tests:
+    name: PoC tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20.x
+
+      - name: Run PoC test scripts when present
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          packages=(poc/*/package.json)
+          if [ "${#packages[@]}" -eq 0 ]; then
+            echo "No poc/*/package.json found. Nothing to test."
+            exit 0
+          fi
+          ran=0
+          root=$(pwd)
+          for pkg in "${packages[@]}"; do
+            dir=$(dirname "$pkg")
+            has_test=$(node -e 'const p=require(process.argv[1]); const t=p.scripts&&p.scripts.test; process.stdout.write(typeof t==="string"&&t.trim()?"yes":"no")' "$root/$pkg")
+            if [ "$has_test" != "yes" ]; then
+              echo "Skip $dir (no test script)."
+              continue
+            fi
+            echo "Test $dir"
+            ran=1
+            work=$(mktemp -d)
+            cp -a "$dir"/. "$work"/
+            (
+              cd "$work"
+              if [ -f yarn.lock ]; then
+                yarn install --frozen-lockfile
+                yarn test
+              elif [ -f package-lock.json ]; then
+                npm ci
+                npm test
+              elif [ -f pnpm-lock.yaml ]; then
+                corepack enable
+                pnpm install --frozen-lockfile
+                pnpm test
+              else
+                npm install
+                npm test
+              fi
+            )
+            rm -rf "$work"
+          done
+          if [ "$ran" -eq 0 ]; then
+            echo "PoC packages found, but none define a test script. No-op."
+          fi
+
+# --- Pages redeploy (DISABLED) ----------------------------------------------
+# Do not uncomment this while .github/workflows/deploy-pages.yml is active.
+#
+# That workflow is named "Deploy GitHub Pages" and already redeploys on:
+#   push to master
+#   workflow_dispatch
+# concurrency:
+#   group: pages
+#   cancel-in-progress: false
+#
+# Because cancel-in-progress is false, dispatching it again from a master
+# push does not replace the in-progress deploy. It queues a second one.
+#
+# To redeploy without a new commit, run the existing workflow only:
+#   gh workflow run "Deploy GitHub Pages" --ref master
+#
+# Shape that must stay disabled:
+#
+# on:
+#   push:
+#     branches:
+#       - master
+# jobs:
+#   redeploy-pages:
+#     if: false
+#     runs-on: ubuntu-latest
+#     permissions:
+#       actions: write
+#       contents: read
+#     steps:
+#       - name: Dispatch the existing Deploy GitHub Pages workflow
+#         env:
+#           GH_TOKEN: ${{ github.token }}
+#         run: gh workflow run "Deploy GitHub Pages" --ref master

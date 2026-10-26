@@ -1,0 +1,34 @@
+schema: spec-driven
+
+context: |
+  Language: zh-TW
+  All artifacts must be written in zh-TW.
+  Keep OpenSpec structural headings and SHALL/MUST keywords in English.
+  Fork: yiming/excalidraw. Default branch is master. Do not edit master directly.
+  Deploy target is GitHub Pages at https://yiming.github.io/excalidraw/.
+  Planned iPad work: Apple Pencil pressure and tilt, simple animation editing and playback, iPad-desktop sync, paging and slides.
+  Standalone experiments live in poc/ with their own dependencies and are proven before mainline.
+  Do not start feature code until the architecture is approved.
+  Writing a spec does not include edits under packages/ or excalidraw-app/.
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always state what is out of scope
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing
