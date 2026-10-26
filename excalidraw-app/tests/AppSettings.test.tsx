@@ -12,6 +12,12 @@ import { AppSettings } from "../components/AppSettings";
 
 const { h } = window;
 
+const openSettings = () => {
+  act(() => {
+    h.app.setState({ openDialog: { name: "settings" } });
+  });
+};
+
 describe("iPad settings page", () => {
   beforeEach(async () => {
     await render(
@@ -57,15 +63,30 @@ describe("iPad settings page", () => {
       document.querySelector("[data-testid='settings-category-thanks']")
         ?.textContent,
     ).toBe("Special Thanks To");
+    expect(
+      Array.from(
+        document.querySelectorAll("button[data-testid^='settings-category-']"),
+      ).map((button) => button.getAttribute("data-testid")),
+    ).toEqual([
+      "settings-category-thanks",
+      "settings-category-preferences",
+      "settings-category-themeLanguage",
+      "settings-category-about",
+    ]);
+    expect(document.querySelector("[data-testid='settings-close']")).toBeNull();
+    expect(document.querySelector(".Dialog__close")).toBeNull();
+    expect(
+      document.querySelector("[data-testid='settings-back']")?.textContent,
+    ).toBe("Back");
+    expect(
+      document
+        .querySelector("[data-testid='settings-dialog']")
+        ?.closest(".excalidraw"),
+    ).not.toBeNull();
   });
 
   it("shows the thank-you sentence and the five links on one page", () => {
-    act(() => {
-      h.app.setState({ openDialog: { name: "settings" } });
-    });
-    fireEvent.click(
-      document.querySelector("[data-testid='settings-category-thanks']")!,
-    );
+    openSettings();
     const sentence = document.querySelector(
       "[data-testid='settings-thanks-sentence']",
     );
@@ -86,21 +107,119 @@ describe("iPad settings page", () => {
     expect(hrefs).toHaveLength(5);
   });
 
-  it("defaults the finger-mode size tier to large and keeps the switch out of settings", () => {
-    expect(h.state.fingerModeSize).toBe("large");
-    act(() => {
-      h.app.setState({ openDialog: { name: "settings" } });
-    });
+  it("describes this fork on About and keeps credit links off that page", () => {
+    openSettings();
     fireEvent.click(
-      document.querySelector("[data-testid='settings-category-finger']")!,
+      document.querySelector("[data-testid='settings-category-about']")!,
+    );
+    const about = document.querySelector("[data-testid='settings-about']");
+    expect(
+      about?.querySelector("[data-testid='settings-about-name']")?.textContent,
+    ).toBe("Excalidraw");
+    expect(about?.textContent).toContain(
+      "An iPad-friendly fork of Excalidraw.",
+    );
+    expect(
+      about?.querySelector("[data-testid='settings-about-version']")
+        ?.textContent,
+    ).toContain("Version");
+    const repo = about?.querySelector(
+      "[data-testid='settings-about-repo']",
+    ) as HTMLAnchorElement | null;
+    expect(repo?.href).toBe("https://github.com/yiming/excalidraw");
+    const hrefs = Array.from(about?.querySelectorAll("a") ?? []).map(
+      (anchor) => (anchor as HTMLAnchorElement).href,
+    );
+    expect(hrefs).toHaveLength(1);
+    expect(about?.textContent).not.toContain("Excalidraw+");
+    expect(about?.textContent).not.toContain("Discord");
+    expect(about?.textContent).not.toContain("Sign up");
+
+    fireEvent.click(document.querySelector("[data-testid='settings-back']")!);
+    expect(h.state.openDialog).toBeNull();
+  });
+
+  it("puts theme, language, the finger switch, and per-item sizes on one page", () => {
+    expect(h.state.fingerMode).toBe(false);
+    expect(h.state.fingerModeDefaultButton).toBe("large");
+    expect(h.state.fingerModeScaleHandle).toBe("large");
+    expect(h.state.fingerModeRotateHandle).toBe("large");
+    openSettings();
+    fireEvent.click(
+      document.querySelector(
+        "[data-testid='settings-category-themeLanguage']",
+      )!,
     );
     const detail = document.querySelector("[data-testid='settings-detail']");
-    expect(detail?.textContent).toContain("Large");
-    expect(detail?.textContent).toContain("Extra Large");
-    expect(detail?.textContent).not.toContain("Pen mode");
-    const large = Array.from(detail?.querySelectorAll("button") ?? []).find(
-      (button) => button.textContent === "Large",
+    expect(detail?.textContent).toContain("Theme");
+    expect(detail?.textContent).toContain("Language");
+    expect(detail?.querySelector("select")).not.toBeNull();
+    expect(detail?.querySelector("[name='settings-theme']")).not.toBeNull();
+    const row = document.querySelector("[data-testid='settings-finger-mode']");
+    expect(row?.textContent).toContain("Finger mode");
+    expect(row?.textContent).not.toContain("Pen mode");
+    expect(row?.querySelector("svg")).not.toBeNull();
+    expect(row?.querySelector("input[type='checkbox']")).not.toBeNull();
+    expect(row?.querySelector(".dropdown-menu-item__shortcut")).toBeNull();
+    const sizes = [
+      "settings-size-default-button",
+      "settings-size-large-button",
+      "settings-size-menu-item",
+      "settings-size-menu-gap",
+      "settings-size-scale-handle",
+      "settings-size-rotate-handle",
+    ];
+    for (const id of sizes) {
+      const group = document.querySelector(`[data-testid='${id}']`);
+      expect(
+        group?.querySelector(".RadioGroup__choice.active")?.textContent,
+      ).toBe("Large");
+    }
+    const themeControl = detail?.querySelector("[name='settings-theme']");
+    const languageControl = detail?.querySelector("select");
+    const sizeControl = detail?.querySelector(
+      "[data-testid='settings-size-default-button']",
     );
-    expect(large?.getAttribute("aria-pressed")).toBe("true");
+    expect(
+      themeControl!.compareDocumentPosition(row!) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).not.toBe(0);
+    expect(
+      languageControl!.compareDocumentPosition(row!) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).not.toBe(0);
+    expect(
+      row!.compareDocumentPosition(sizeControl!) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).not.toBe(0);
+
+    fireEvent.click(row!.querySelector("input[type='checkbox']")!);
+    expect(h.state.fingerMode).toBe(true);
+    expect(h.state.penMode).toBe(false);
+
+    const scale = document.querySelector(
+      "[data-testid='settings-size-scale-handle'] .RadioGroup__choice:last-child input",
+    )!;
+    fireEvent.click(scale);
+    expect(h.state.fingerModeScaleHandle).toBe("xl");
+    expect(h.state.fingerModeRotateHandle).toBe("large");
+  });
+
+  it("uses Switch for a preference and closes on Escape", () => {
+    openSettings();
+    fireEvent.click(
+      document.querySelector("[data-testid='settings-category-preferences']")!,
+    );
+    const grid = document.querySelector(
+      "input[name='settings-grid']",
+    ) as HTMLInputElement;
+    expect(grid).not.toBeNull();
+    expect(
+      document.querySelector("[data-testid='settings-dialog'] [aria-pressed]"),
+    ).toBeNull();
+    fireEvent.click(grid);
+    expect(h.state.gridModeEnabled).toBe(true);
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(h.state.openDialog).toBeNull();
   });
 });

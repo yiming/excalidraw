@@ -1,35 +1,42 @@
 # Tasks
 
-## 1. 設定頁
+## 1. 外殼
 
-- [x] 1.1 用全螢幕設定頁呈現左清單、右內容。窄寬度的先清單再內容先記成設計考量；`finger-mode` 在 720px 以下已做成先清單、再內容。
+- [x] 1.1 設定頁改為 `Modal` 加 `Dialog`。拿掉固定全螢幕 div。左上角是返回按鈕，不是 Close，也不是清單項目。
 - [x] 1.2 沿用 `openDialog` 的 `"settings"`，不另開一種對話框名稱。
-- [x] 1.3 左側清單已有 Special Thanks To（標籤原樣、只一項）、手指模式、偏好設定、主題、語系。規格另列關於；這次合併不改應用程式，程式裡還沒有關於這個類別。
+- [x] 1.3 頁面渲染在 `.excalidraw` 裡面，亮色與暗色都只靠 CSS 變數。
 
-## 2. 漢堡選單
+## 2. 頁面結構
 
-- [x] 2.1 在說明與重設畫布之間加入「設定」。
-- [x] 2.2 漢堡選單與右上角宣傳列都拿掉 Excalidraw+、GitHub、追蹤我們、Discord、Sign up／Sign in。連結不刪除。`finger-mode` 也把歡迎畫面的註冊連結移走。
-- [x] 2.3 偏好設定、主題、語系改到各自的設定類別。即時操作與 Canvas 背景留在漢堡選單。
+- [x] 2.1 主題與語系合併成一頁。手指模式開關列與各尺寸選擇放在它們下面。不再為主題、語系或手指模式各開一頁。
+- [x] 2.2 設定有「關於」區段。Excalidraw+、GitHub、追蹤我們、Discord、Sign up 不放在這個區段。
+- [x] 2.3 有一個項目的標籤原樣是 Special Thanks To。
 
-## 3. Special Thanks To
+## 3. 漢堡選單
 
-- [x] 3.1 這一頁的上游連結只有五個：Excalidraw+、GitHub、追蹤我們、Discord、Sign up。關於與其他類別都不放。
-- [x] 3.2 同一頁加一句感謝 Excalidraw 原作者的普通文字。不另加 GitHub 網址；既有的 GitHub 連結就是出處。
+- [x] 3.1 在說明與重設畫布之間加入「設定」。
+- [x] 3.2 漢堡選單與右上角宣傳列都拿掉 Excalidraw+、GitHub、追蹤我們、Discord、Sign up／Sign in。連結不刪除，改放在 Special Thanks To。
+- [x] 3.3 偏好設定、主題、語系離開漢堡選單。即時操作與 Canvas 背景留在漢堡選單。
 
-## 4. 手指模式類別
+## 4. Special Thanks To
 
-- [x] 4.1 設定頁加入「手指模式」，不放 ON／OFF 開關。
-- [x] 4.2 「手指模式」提供尺寸四段，預設大。沒有把按鈕或控制點寫死成單一 44px。順序是一般按鈕、大按鈕、選單項目高度、選單項目間距、變形控制點。
-  - 小：32 / 36 / 32 / 1 / 8px（上游）。
-  - 中：36 / 39 / 36 / 4 / 20px。
-  - 大（預設）：40 / 42 / 40 / 6 / 32px。
-  - 特大：44 / 44 / 至少 44 / 8 / 44px。
-  - 筆模式關閉或指標不是粗指標時維持上游尺寸。
-- [x] 4.3 三點選單的開關屬 `finger-mode` 的主提案。選單裡只有開關，尺寸段位在本設定頁。
+- [x] 4.1 這一頁的連結是 Excalidraw+、GitHub、追蹤我們、Discord、Sign up。同一頁有一句感謝 Excalidraw 原作者的文字。不另加 GitHub 網址。
+- [x] 4.2 這些連結改成 `--color-primary` 的文字連結。
 
-## 5. 行為與字串
+## 5. 手指模式選項
 
-- [x] 5.1 被移項目的行為與儲存維持不變（`excalidraw-state`、`excalidraw-theme`）。尺寸段位同樣是 `browser: true`。
-- [x] 5.2 補上缺少的 zh-TW：Input、Trackpad、Mouse、Show hints、Sign up、Sign in，以及設定頁與尺寸段位字串。
-- [x] 5.3 不在本變更新增其他功能。五個致謝連結保留在 Special Thanks To，不刪除。
+- [x] 5.1 設定頁的手指模式列與三點選單相同：左手指圖示、中「手指模式」、右 `Switch`。沒有勾選、快捷鍵、副標或說明。
+- [x] 5.2 一般按鈕、大按鈕、選單項目高度、選單項目間距、縮放控制點、旋轉控制點各自用 `RadioGroup` 選小、中、大、特大，預設大。像素見 `add-finger-mode`。
+
+## 6. 視覺
+
+- [x] 6.1 類別列沿用 `.dropdown-menu-item`。
+- [x] 6.2 偏好設定的開關改為標籤在左、`Switch` 在右。拿掉 `ToggleRow`。
+- [x] 6.3 單選設定也用 `RadioGroup`。
+- [x] 6.4 區段標題不要 fieldset 框線。約 0.875rem、粗體、`--color-gray-60`。
+- [x] 6.5 `.excalidraw--finger-targets` 下的列使用 `min-height: var(--finger-menu-item-height, 2rem)`。
+- [x] 6.6 設定頁樣式不寫死 hex 或 px，改用 `--border-radius-md`、`--space-factor`、`--input-*`、`--island-bg-color`、`--ui-font`。
+
+## 7. 語系
+
+- [x] 7.1 規格列出的鍵在 `zh-TW.json` 與 `zh-CN.json` 都有譯文。

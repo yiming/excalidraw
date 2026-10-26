@@ -8,7 +8,7 @@ import { t } from "../i18n";
 import { useTunnels } from "../context/tunnels";
 
 import DropdownMenu from "./dropdownMenu/DropdownMenu";
-import { PenModeMenuItem } from "./PenModeMenuItem";
+import { FingerModeMenuItem } from "./FingerModeMenuItem";
 import { ToolPopover } from "./ToolPopover";
 import {
   EraserToolButton,
@@ -336,7 +336,7 @@ export const MobileToolbar = ({ app, setAppState }: MobileToolbarProps) => {
           >
             {t("toolBar.laser")}
           </DropdownMenu.Item>
-          <PenModeMenuItem app={app} />
+          <FingerModeMenuItem app={app} />
           <DropdownMenu.Item
             onSelect={() => app.setActiveTool({ type: "bucketfill" })}
             icon={bucketFillIcon}

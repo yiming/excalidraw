@@ -21,10 +21,7 @@ import type {
 
 import { t } from "../../i18n";
 import { getSelectionColor } from "../../renderer/helpers";
-import {
-  isCoarsePointer,
-  resolveFingerModeHandleSize,
-} from "../penModePointer";
+import { fingerModeHandleSize } from "../fingerMode";
 import { renderInteractiveScene } from "../../renderer/interactiveScene";
 
 import { AnimationController } from "../../renderer/animation";
@@ -171,11 +168,14 @@ const InteractiveCanvas = (props: InteractiveCanvasProps) => {
         remotePointerUserStates,
         selectionColor,
         renderScrollbars: props.renderScrollbars,
-        transformHandleSize: resolveFingerModeHandleSize({
-          penMode: props.app.state.penMode,
-          coarsePointer: isCoarsePointer(props.app.ownerWindow),
-          tier: props.app.state.fingerModeSize,
-        }),
+        transformHandleSize: fingerModeHandleSize(
+          props.app.state.fingerMode,
+          props.app.state.fingerModeScaleHandle,
+        ),
+        rotationHandleSize: fingerModeHandleSize(
+          props.app.state.fingerMode,
+          props.app.state.fingerModeRotateHandle,
+        ),
         // NOTE not memoized on so we don't rerender on cursor move
         lastViewportPosition: props.app.viewport.lastPosition,
       },

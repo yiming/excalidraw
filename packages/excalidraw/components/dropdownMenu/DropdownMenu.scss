@@ -165,6 +165,10 @@
         gap: 0.75rem;
       }
 
+      &__badge {
+        flex: none;
+      }
+
       &__shortcut {
         margin-inline-start: auto;
         opacity: 0.5;
