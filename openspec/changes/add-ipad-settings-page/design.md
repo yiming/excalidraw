@@ -38,8 +38,8 @@
 - 偏好設定仍是自己的一區，因為它有多個既有項目。行為與儲存維持搬移前。
 - 設定有「關於」區段。五個致謝連結不放在這裡。
 - 類別列沿用 `.dropdown-menu-item`：圓角 `--border-radius-md`，hover 用 `--button-hover-bg`，選中用 `--color-primary-light`，字色 `--text-primary-color`。
-- 偏好設定裡的開關是標籤在左、`Switch` 在右。拿掉 `ToggleRow`。
-- 單選（框選方式、輸入裝置、主題）以及每一項的小、中、大、特大都用 `RadioGroup`。
+- 偏好設定裡的開關沿用主選單核取列（`checkIcon` / `emptyIcon`），不是自製的 `Switch` 列。拿掉 `ToggleRow`。
+- 框選方式、輸入裝置、主題用 `DropdownMenuItemContentRadio`。主題選項是主選單的太陽、月亮、桌面圖示。手指模式各尺寸仍用 `RadioGroup`。
 - 手指模式那一列不走一般開關的「只剩標籤與 Switch」。它是左手指圖示、中「手指模式」、右 `Switch`。見 `add-finger-mode`。開關在各尺寸選擇之上。
 - 區段標題不用帶框線的 fieldset。字級約 0.875rem、粗體、顏色 `--color-gray-60`。
 - Special Thanks To 的連結是 `--color-primary` 的文字連結。感謝句是普通內文，顏色 `--text-primary-color`。

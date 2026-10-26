@@ -80,37 +80,37 @@
 - **WHEN** 使用者在設定的類別列選中一項
 - **THEN** 該列使用 `.dropdown-menu-item` 的選中樣式，而不是另一套背景
 
-### Requirement: Boolean rows use Switch
+### Requirement: Boolean rows use the menu checkbox
 
-偏好設定裡的開關 SHALL 是標籤在左、`Switch` 在右。現有的 `ToggleRow`（只改背景的 `button[aria-pressed]`）MUST NOT 再使用。手指模式那一列的版面見下一條需求，不套用「只有標籤與 Switch」。
+偏好設定裡的開關 SHALL 沿用主選單的核取列：`dropdown-menu-item`，勾選時是 `checkIcon`，未勾選時是 `emptyIcon`。這與 `DropdownMenuItemCheckbox` 的標記相同。`ToggleRow`（只改背景的 `button[aria-pressed]`）與自製的 `Switch` 列 MUST NOT 再使用。手指模式那一列的版面見下一條需求，仍只用 `Switch`。
 
-#### Scenario: A preference toggle shows Switch
+#### Scenario: A preference toggle shows the menu checkbox
 
 - **WHEN** 使用者查看偏好設定裡的一項開關
-- **THEN** 標籤在左，右側是 `Switch`，不是只改變背景色的按鈕
+- **THEN** 左側是勾選圖示或空白圖示，右側是標籤，不是 `Switch`，也不是只改變背景色的按鈕
 
-### Requirement: Single choices use RadioGroup
+### Requirement: Single choices use the menu radio
 
-框選方式、輸入裝置、主題，以及手指模式每一項的小、中、大、特大，SHALL 使用 `RadioGroup`。
+框選方式、輸入裝置與主題 SHALL 使用 `DropdownMenuItemContentRadio`（列上的標籤加上 `RadioGroup`）。主題的三個選項 SHALL 是主選單同一組圖示：`SunIcon`、`MoonIcon`、`DeviceDesktopIcon`，並用既有的淺色、深色、系統模式字串當 `aria-label`。手指模式每一項的小、中、大、特大 SHALL 使用 `RadioGroup`，沒有對應的主選單控制項。
 
-#### Scenario: Theme uses a radio group
+#### Scenario: Theme uses the icon radio
 
 - **WHEN** 使用者在合併頁上看主題
-- **THEN** 主題的選項是 `RadioGroup`，不是一排 `ToggleRow`
+- **THEN** 主題列是 `DropdownMenuItemContentRadio`，三個選項是太陽、月亮與桌面圖示，不是文字按鈕
 
 #### Scenario: Each finger mode item has its own radio group
 
 - **WHEN** 使用者查看手指模式的尺寸選擇
 - **THEN** 一般按鈕、大按鈕、選單項目高度、選單項目間距、縮放控制點、旋轉控制點各有一個 `RadioGroup`，預設都是大
 
-### Requirement: Section headers are quiet
+### Requirement: Section headers use the menu group title
 
-區段標題 MUST NOT 使用帶框線的 fieldset。標題 SHALL 約為 0.875rem、粗體，顏色 SHALL 為 `--color-gray-60`。
+區段標題 MUST NOT 使用帶框線的 fieldset，也 MUST NOT 自訂另一套標題色。語言與手指模式各尺寸的標題 SHALL 使用 `.dropdown-menu-group-title`。
 
 #### Scenario: A section title has no fieldset border
 
 - **WHEN** 使用者看到設定裡的區段標題
-- **THEN** 標題沒有 fieldset 框線，字是粗體，顏色是 `--color-gray-60`
+- **THEN** 標題是 `.dropdown-menu-group-title`，沒有 fieldset 框線
 
 ### Requirement: Settings chrome uses design tokens
 
