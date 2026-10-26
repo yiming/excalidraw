@@ -13,8 +13,14 @@ export const PenModeMenuItem = ({ app }: { app: AppClassProperties }) => {
   return (
     <DropdownMenu.ItemCheckbox
       checked={selected}
+      selected={selected}
       aria-pressed={selected}
       data-testid="toolbar-pen-mode"
+      badge={
+        <span data-testid="toolbar-pen-mode-state">
+          {selected ? t("labels.on") : t("labels.off")}
+        </span>
+      }
       onSelect={(event) => {
         event.preventDefault();
         app.togglePenMode(null);

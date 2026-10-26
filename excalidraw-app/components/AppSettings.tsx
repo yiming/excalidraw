@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { THEME } from "@excalidraw/common";
+import { getVersion, THEME } from "@excalidraw/common";
 import {
   actionToggleArrowBinding,
   actionToggleGridMode,
@@ -32,12 +32,15 @@ import { isExcalidrawPlusSignedUser } from "../app_constants";
 
 import "./AppSettings.scss";
 
+// Spec order: Special Thanks To, 關於, 手指模式, 偏好設定, 主題, 語系.
+// Close stays a dismiss control under the list, not a category.
 const CATEGORIES = [
   "thanks",
+  "about",
+  "finger",
   "preferences",
   "theme",
   "language",
-  "finger",
 ] as const;
 
 type Category = typeof CATEGORIES[number];
@@ -126,19 +129,20 @@ export const AppSettings = ({ theme }: { theme: Theme | "system" }) => {
   const showPane = !narrow || showDetail;
 
   const categoryLabel = (id: Category) => {
-    if (id === "thanks") {
-      return "Special Thanks To";
+    switch (id) {
+      case "thanks":
+        return "Special Thanks To";
+      case "about":
+        return t("labels.about");
+      case "finger":
+        return t("labels.fingerMode");
+      case "preferences":
+        return t("labels.preferences");
+      case "theme":
+        return t("labels.theme");
+      case "language":
+        return t("labels.language");
     }
-    if (id === "preferences") {
-      return t("labels.preferences");
-    }
-    if (id === "theme") {
-      return t("labels.theme");
-    }
-    if (id === "language") {
-      return t("labels.language");
-    }
-    return t("labels.fingerMode");
   };
 
   const run = (action: Parameters<typeof actionManager.executeAction>[0]) => {
@@ -172,7 +176,12 @@ export const AppSettings = ({ theme }: { theme: Theme | "system" }) => {
               {categoryLabel(id)}
             </button>
           ))}
-          <button type="button" className="AppSettings__back" onClick={close}>
+          <button
+            type="button"
+            className="AppSettings__back"
+            data-testid="settings-close"
+            onClick={close}
+          >
             {t("buttons.close")}
           </button>
         </div>
@@ -190,6 +199,7 @@ export const AppSettings = ({ theme }: { theme: Theme | "system" }) => {
           )}
           <h2 className="AppSettings__title">{categoryLabel(category)}</h2>
           {category === "thanks" && <ThanksPane />}
+          {category === "about" && <AboutPane />}
           {category === "preferences" && (
             <div className="AppSettings__group">
               <fieldset className="AppSettings__group">
@@ -326,6 +336,31 @@ export const AppSettings = ({ theme }: { theme: Theme | "system" }) => {
           )}
         </div>
       )}
+    </div>
+  );
+};
+
+const AboutPane = () => {
+  const { t } = useI18n();
+
+  return (
+    <div data-testid="settings-about">
+      <p className="AppSettings__thanks" data-testid="settings-about-name">
+        Excalidraw
+      </p>
+      <p className="AppSettings__thanks" data-testid="settings-about-fork">
+        {t("labels.aboutFork")}
+      </p>
+      <p className="AppSettings__thanks" data-testid="settings-about-version">
+        {t("stats.version")}: {getVersion()}
+      </p>
+      <a
+        className="AppSettings__link"
+        data-testid="settings-about-repo"
+        href="https://github.com/yiming/excalidraw"
+      >
+        {t("labels.aboutRepository")}
+      </a>
     </div>
   );
 };

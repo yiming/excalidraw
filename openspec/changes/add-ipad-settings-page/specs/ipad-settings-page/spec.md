@@ -126,6 +126,15 @@
 - **WHEN** 手指模式為關，使用者查看設定頁的這一列
 - **THEN** 右側表示關
 
+### Requirement: About category describes this fork
+
+關於類別 SHALL 顯示應用名稱、說明這是 Excalidraw 的 iPad 友善分支、沿用既有版本資訊，以及這個分支的儲存庫連結。關於 MUST NOT 包含 Special Thanks To 的五個致謝連結。
+
+#### Scenario: About shows the fork
+
+- **WHEN** 使用者選擇關於
+- **THEN** 頁面有應用名稱、iPad 友善分支的說明、版本，以及此分支儲存庫的連結，且沒有 Excalidraw+、Discord 或 Sign up
+
 ### Requirement: Credit links live only on Special Thanks To
 
 名為 Special Thanks To 的頁面 SHALL 包含這五個連結，且 MUST NOT 刪除：Excalidraw+、GitHub、追蹤我們、Discord、Sign up。同一頁 SHALL 有一句感謝 Excalidraw 原作者的普通文字，並 MUST NOT 另加 GitHub 網址。這五個連結 MUST NOT 出現在漢堡選單、右上角宣傳列，或任何其他設定區段（包含關於）。連結 SHALL 是顏色為 `--color-primary` 的文字連結。

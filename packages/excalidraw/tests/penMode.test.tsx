@@ -38,13 +38,22 @@ describe("pen mode", () => {
 
   it("toggles from the more-tools menu and keeps the menu item state", () => {
     const item = openPenModeItem();
+    const state = () =>
+      item.querySelector("[data-testid='toolbar-pen-mode-state']")?.textContent;
     expect(item.getAttribute("aria-pressed")).toBe("false");
+    expect(state()).toBe("Off");
+    expect(item.querySelector("svg")).toBeNull();
     fireEvent.click(item);
     expect(h.state.penMode).toBe(true);
     expect(item.getAttribute("aria-pressed")).toBe("true");
+    expect(state()).toBe("On");
+    expect(item.querySelector("svg")).not.toBeNull();
+    expect(item.className).toContain("dropdown-menu-item--selected");
     fireEvent.click(item);
     expect(h.state.penMode).toBe(false);
     expect(item.getAttribute("aria-pressed")).toBe("false");
+    expect(state()).toBe("Off");
+    expect(item.querySelector("svg")).toBeNull();
   });
 
   it("does not let a finger drag a selected element", () => {
