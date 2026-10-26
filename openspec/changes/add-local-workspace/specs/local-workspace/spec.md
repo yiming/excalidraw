@@ -45,7 +45,7 @@
 
 ### Requirement: Local storage holds two files and twenty pages
 
-計入的檔案 MUST NOT 超過 2 個。每個檔案 MUST NOT 超過 10 頁。計入的頁數合計 MUST NOT 超過 20。無限畫布的頁暫時 MUST NOT 計入這 20 頁。這是暫時決定，以後再審查。已滿時 SHALL 提示使用者刪除或匯出。無限畫布的檔案是否計入這 2 個檔，本需求不決定。
+計入的檔案 MUST NOT 超過 2 個。每個檔案 MUST NOT 超過 10 頁。計入的頁數合計 MUST NOT 超過 20。無限畫布的頁暫時 MUST NOT 計入這 20 頁。這是暫時決定，以後再審查。已滿時 SHALL 提示使用者刪除或匯出。無限畫布 MUST NOT 計入這 2 個檔。
 
 #### Scenario: Two files of ten pages fill the total
 
