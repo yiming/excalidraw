@@ -25,7 +25,7 @@
 
 ## Advanced features
 
-底層資料庫保留 Flash 等級的能力。畫面上只露出 3 到 5 個基本選項。
+底層資料庫保留 Flash 等級的能力。畫面上只露出約 5 個基本選項（觸控與 Apple Pencil）。這是參考值，不是固定數量。
 
 進階用法只透過 AI，可以打字或用語音。AI 產生動作呼叫腳本（action-calling scripts），再記成時間軸（timeline）與關鍵影格（keyframes）。
 
