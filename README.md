@@ -1,3 +1,16 @@
+# 這個 fork
+
+適合 iPad 的 Excalidraw 教學白板。
+
+- iPad 優先的介面：按鈕與控制點（handles）放大，適合觸控與 Apple Pencil。
+- Pencil 適合畫形狀、手繪、縮放、拖曳；手指旋轉與移動可能不精準，考慮這些操作只用 Pencil。
+- 進階功能只能透過 AI（打字或語音、自然語言）使用，介面不放進階控制。
+- 只在 beta 版提供唯讀時間軸檢視器（圖層、時間軸、關鍵影格、屬性），不能編輯，正式版移除。
+- 偏向 PowerPoint 式跨投影片補間，而不是 Flash 式的場景硬切換。
+- 唯讀檢視器看起來可能像 Flash，因為它是校對工具。
+
+詳見 [`docs/2026-10-26-consolidation.md`](docs/2026-10-26-consolidation.md) 與 [`docs/2026-10-26-plan.md`](docs/2026-10-26-plan.md)。
+
 <a href="https://excalidraw.com/" target="_blank" rel="noopener">
   <picture>
     <source media="(prefers-color-scheme: dark)" alt="Excalidraw" srcset="https://excalidraw.nyc3.cdn.digitaloceanspaces.com/github/excalidraw_github_cover_2_dark.png" />

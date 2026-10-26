@@ -26,4 +26,15 @@ coverage
 dev-dist
 html
 meta*.json
-.claude
+# Local Claude Code state stays ignored. This fork tracks shared subagents
+# and the reserved commands/skills/hooks placeholders.
+.claude/*
+!.claude/README.md
+!.claude/agents/
+!.claude/agents/**
+!.claude/commands/
+!.claude/commands/**
+!.claude/skills/
+!.claude/skills/**
+!.claude/hooks/
+!.claude/hooks/**

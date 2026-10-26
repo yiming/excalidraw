@@ -205,7 +205,16 @@
     "showHints": "Show hints",
     "inputDevice": "Input",
     "inputDeviceTrackpad": "Trackpad",
-    "inputDeviceMouse": "Mouse"
+    "inputDeviceMouse": "Mouse",
+    "settings": "Settings",
+    "fingerMode": "Finger mode",
+    "fingerModeSize": "Size",
+    "fingerModeSizeSmall": "Small",
+    "fingerModeSizeMedium": "Medium",
+    "fingerModeSizeLarge": "Large",
+    "fingerModeSizeExtraLarge": "Extra Large",
+    "fingerModeHideShortcuts": "Hide shortcut hints",
+    "specialThanksSentence": "Special thanks to the original Excalidraw authors."
   },
   "elementLink": {
     "title": "Link to object",
@@ -338,7 +347,7 @@
     "text": "Text",
     "library": "Library",
     "lock": "Keep selected tool active after drawing",
-    "penMode": "Pen mode - prevent touch",
+    "penMode": "Pen mode - finger pans and zooms",
     "link": "Add / Update link for a selected shape",
     "eraser": "Eraser",
     "frame": "Frame tool",

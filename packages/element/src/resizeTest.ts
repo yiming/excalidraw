@@ -55,6 +55,7 @@ export const resizeTest = <Point extends GlobalPoint | LocalPoint>(
   zoom: Zoom,
   pointerType: PointerType,
   editorInterface: EditorInterface,
+  handleSize?: number,
 ): MaybeTransformHandleType => {
   if (!appState.selectedElementIds[element.id]) {
     return false;
@@ -67,6 +68,7 @@ export const resizeTest = <Point extends GlobalPoint | LocalPoint>(
       elementsMap,
       pointerType,
       getOmitSidesForEditorInterface(editorInterface),
+      handleSize,
     );
 
   if (
@@ -138,6 +140,7 @@ export const getElementWithTransformHandleType = (
   pointerType: PointerType,
   elementsMap: ElementsMap,
   editorInterface: EditorInterface,
+  handleSize?: number,
 ) => {
   return elements.reduce((result, element) => {
     if (result) {
@@ -152,6 +155,7 @@ export const getElementWithTransformHandleType = (
       zoom,
       pointerType,
       editorInterface,
+      handleSize,
     );
     return transformHandleType ? { element, transformHandleType } : null;
   }, null as { element: NonDeletedExcalidrawElement; transformHandleType: MaybeTransformHandleType } | null);
@@ -166,6 +170,7 @@ export const getTransformHandleTypeFromCoords = <
   zoom: Zoom,
   pointerType: PointerType,
   editorInterface: EditorInterface,
+  handleSize?: number,
 ): MaybeTransformHandleType => {
   const transformHandles = getTransformHandlesFromCoords(
     [x1, y1, x2, y2, (x1 + x2) / 2, (y1 + y2) / 2],
@@ -173,6 +178,9 @@ export const getTransformHandleTypeFromCoords = <
     zoom,
     pointerType,
     getOmitSidesForEditorInterface(editorInterface),
+    undefined,
+    undefined,
+    handleSize,
   );
 
   const found = Object.keys(transformHandles).find((key) => {
