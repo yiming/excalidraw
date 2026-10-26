@@ -2,7 +2,7 @@
 
 ## Purpose
 
-提供一頁 iPad 風格的全螢幕設定，把漢堡選單裡的非即時項目移進去，並用「手指模式」類別承接 finger mode 的細節選項。
+提供一頁 iPad 風格的全螢幕設定，把上游致謝連結集中到 Special Thanks To，並用「手指模式」類別承接 finger mode 的細節選項。
 
 ## ADDED Requirements
 
@@ -24,19 +24,42 @@
 - **WHEN** 使用者在漢堡選單於說明與重設畫布之間選擇「設定」
 - **THEN** 設定頁開啟
 
-### Requirement: Non-immediate items leave the hamburger menu
+### Requirement: Settings category list
 
-下列項目 SHALL 離開漢堡選單，並出現在設定頁：Excalidraw+ 連結、GitHub、追蹤我們、Discord、Sign up、偏好設定的全部項目、主題、語系。Sign up 與 Sign in 是同一個項目的兩種標籤，SHALL 一起移走。
+左側清單 SHALL 包含 Special Thanks To、關於、手指模式、偏好設定、主題、語系。Special Thanks To MUST 只佔一個項目，標籤文字 SHALL 原樣為 Special Thanks To。
 
-#### Scenario: Moved links are absent from the hamburger menu
+#### Scenario: Left list includes one Special Thanks To entry
 
-- **WHEN** 使用者打開漢堡選單
-- **THEN** 選單中沒有 Excalidraw+、GitHub、追蹤我們、Discord、Sign up 或 Sign in
+- **WHEN** 使用者開啟設定頁
+- **THEN** 左側清單有一個 Special Thanks To，並且有關於、手指模式、偏好設定、主題、語系
+
+### Requirement: Credit links live only on Special Thanks To
+
+Special Thanks To 的右側 SHALL 包含這五個連結，且 MUST NOT 刪除：Excalidraw+、GitHub、追蹤我們、Discord、Sign up。同一頁 SHALL 有一句感謝 Excalidraw 原作者的普通文字，並 MUST NOT 另加 GitHub 網址；既有的 GitHub 連結就是出處。這五個連結 MUST NOT 出現在漢堡選單、右上角宣傳列，或任何其他設定類別（包含關於）。
+
+#### Scenario: The page shows five links and a plain thank-you sentence
+
+- **WHEN** 使用者選擇 Special Thanks To
+- **THEN** 頁面有 Excalidraw+、GitHub、追蹤我們、Discord、Sign up，以及一句感謝原作者的文字，且沒有第二個 GitHub 網址
+
+#### Scenario: Other categories omit the credit links
+
+- **WHEN** 使用者選擇關於，或 Special Thanks To 以外的類別
+- **THEN** 該類別沒有 Excalidraw+、GitHub、追蹤我們、Discord、Sign up
+
+#### Scenario: Hamburger menu and top promo omit the links
+
+- **WHEN** 使用者打開漢堡選單，或查看右上角宣傳列
+- **THEN** 那裡沒有這五個連結，而連結仍可在 Special Thanks To 開啟
+
+### Requirement: Preferences theme and language leave the hamburger menu
+
+偏好設定的全部項目、主題、語系 SHALL 離開漢堡選單，並出現在設定頁各自的類別。
 
 #### Scenario: Preferences theme and language are in settings
 
 - **WHEN** 使用者開啟設定頁
-- **THEN** 可以找到偏好設定的全部既有項目、主題與語系
+- **THEN** 可以在對應類別找到偏好設定的全部既有項目、主題與語系
 
 ### Requirement: Hamburger menu keeps immediate operations
 
@@ -63,16 +86,16 @@
 
 ### Requirement: Plus and sign-up links are moved not removed
 
-Excalidraw+ 與 Sign up 連結 SHALL 被搬到設定頁。本變更 MUST NOT 刪除這兩個連結。
+Excalidraw+ 與 Sign up 連結 SHALL 被搬到設定頁的 Special Thanks To。本變更 MUST NOT 刪除這兩個連結。
 
 #### Scenario: Links remain reachable
 
-- **WHEN** 使用者開啟設定頁中對應的類別
+- **WHEN** 使用者開啟設定頁的 Special Thanks To
 - **THEN** Excalidraw+ 與 Sign up 連結仍可使用，目的地與搬移前相同
 
-### Requirement: Finger-mode size uses four tiers
+### Requirement: Finger-mode details live in settings
 
-設定頁 SHALL 有「手指模式」類別，以一個尺寸選項同時控制按鈕、選單項目與變形控制點。段位 SHALL 為小、中、大、特大。預設 SHALL 為大。該類別 MUST NOT 包含 ON／OFF 開關。小 SHALL 維持上游尺寸。特大的按鈕 SHALL 為 44px，選單項目高度 SHALL 至少 44px，控制點 SHALL 為 44px。
+設定頁 SHALL 有「手指模式」類別，以一個尺寸選項同時控制一般按鈕、大按鈕、選單項目與變形控制點。段位 SHALL 為小、中、大、特大。預設 SHALL 為大。該類別 MUST NOT 包含 ON／OFF 開關。開關 SHALL 只出現在三點「更多工具」選單。筆模式開啟且主要指標為粗指標時，尺寸 SHALL 依序為一般按鈕、大按鈕、選單高度、選單間距、變形控制點：小 32／36／32／1／8px，中 36／39／36／4／20px，大 40／42／40／6／32px，特大 44／44／至少 44／8／44px。筆模式關閉或指標不是粗指標時 SHALL 維持上游尺寸。
 
 #### Scenario: Toggle is only in the more-tools menu
 
