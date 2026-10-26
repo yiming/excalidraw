@@ -2,7 +2,7 @@
 
 ## Purpose
 
-開發目標第 3 項：選單裡的 Workspace 只使用瀏覽器本地儲存，最多 5 個檔、合計 20 頁。
+開發目標第 3 項：選單裡的 Workspace 只使用瀏覽器本地儲存。兩個檔案，每個檔案最多 10 頁，計入的頁數合計最多 20 頁。無限畫布的頁暫時不計入這 20 頁。
 
 ## ADDED Requirements
 
@@ -43,9 +43,24 @@
 - **WHEN** 使用者查看這個目標的 Workspace
 - **THEN** 規格沒有把開啟、儲存、匯出移進 Workspace
 
-### Requirement: Local storage holds five files and twenty pages
+### Requirement: Local storage holds two files and twenty pages
 
-本地檔案 MUST NOT 超過 5 個，頁數合計 MUST NOT 超過 20。已滿時 SHALL 提示使用者刪除或匯出。
+計入的檔案 MUST NOT 超過 2 個。每個檔案 MUST NOT 超過 10 頁。計入的頁數合計 MUST NOT 超過 20。無限畫布的頁暫時 MUST NOT 計入這 20 頁。這是暫時決定，以後再審查。已滿時 SHALL 提示使用者刪除或匯出。無限畫布的檔案是否計入這 2 個檔，本需求不決定。
+
+#### Scenario: Two files of ten pages fill the total
+
+- **WHEN** 本地有兩個各 10 頁的 slide 檔
+- **THEN** 計入的頁數是 20
+
+#### Scenario: An eleventh page is over the per-file limit
+
+- **WHEN** 一個檔案已有 10 頁
+- **THEN** 第 11 頁超過該檔上限
+
+#### Scenario: An infinite canvas page is outside the total for now
+
+- **WHEN** 本地有一個無限畫布
+- **THEN** 它的頁不計入合計 20 頁，此計算以後再審查
 
 #### Scenario: A full library prompts delete or export
 
