@@ -2,82 +2,48 @@
 
 ## Context
 
-見 `proposal.md` 的 Why。上游已經有 `penMode` 與 `penDetected`：`App.handleCanvasPointerDown` 在第一個 `pointerType === "pen"` 時把兩者設為 true，`togglePenMode` 也寫入同一組狀態。`allowOnPointerDown` 在筆模式裡仍放行選取、套索、文字與圖片的觸控。雙指縮放在自由畫筆加上筆模式時把 `scaleFactor` 寫死為 1。單指平移只存在手形工具、空白鍵與檢視模式，筆模式沒有。
-
-`gesture.pointers` 是模組層的對照表。第二個指標按下時會先跑 missing-pointerup 清理，但清理用的是新事件的 `pointerId`，先放下的手指可能留在表裡。筆再移動時就被當成雙指手勢，這是 [excalidraw#9945](https://github.com/excalidraw/excalidraw/issues/9945) 筆卡在平移／縮放的原因。第二根手指中止過短自由畫筆是 [excalidraw#6440](https://github.com/excalidraw/excalidraw/issues/6440) 已關閉議題的既有行為。
+- 設定頁的外殼、類別與視覺見 `add-ipad-settings-page`。本變更只定義手指模式做什麼，以及開關列的版面。
+- 現有程式把三點選單做成 `DropdownMenu.ItemCheckbox`，圖示是勾選，文案鍵是 `toolBar.penMode`。放大寫在 `fingerModeTargetsActive`：`penMode` 為真、主要指標為粗指標、且段位不是小時才套用。尺寸是單一的 `fingerModeSize`，不是一項一個選擇。
+- 這些現況不是本規格。規格以本檔與 `specs/finger-mode/spec.md` 為準。
 
 ## Goals / Non-Goals
 
 **Goals:**
 
-- 筆模式的手指只平移（一根）與捏合縮放（兩根）。
-- 筆與手指同時接觸時，手勢表與進行中的筆畫不會卡住。
-- 手動開關放在更多工具選單，並複用 `penMode`。
-- 決策與指標分支可以單測，不依賴實機 iPad。
+- 手指模式只放大規格列出的介面元素。
+- 每一項有自己的小、中、大、特大，預設大。小是該項的上游尺寸。
+- 開啟且為觸控時，隱藏快捷鍵提示。
+- 三點選單與設定頁的開關列都是：左手指圖示、中「手指模式」、右開／關。沒有勾選、快捷鍵、副標或說明。
 
 **Non-Goals:**
 
-- 不改筆模式關閉時的觸控繪圖，也不改滑鼠。
-- 不新增第二套「手指模式」狀態、不改場景檔、不做壓力或傾斜。
-- 不在本變更做尺寸段位，也不加嵌入端的把手倍率 API。四段尺寸（小、中、大、特大，預設大）寫在 `add-ipad-settings-page`。
-- 不把既有工具列上的筆模式按鈕拿掉。那個按鈕只在 `penDetected` 之後出現，拿掉會改變既有畫面。
+- 不改畫布手勢。畫布手勢維持上游，不在本變更範圍。
+- 不加入規格沒有列出的行為或設定。這包含把手掌過濾、筆按下時忽略觸控、自動偵測筆、觸覺回饋，以及其他手勢。
+- 不為「隱藏快捷鍵提示」再做一個開關。隱藏是手指模式在觸控時的行為。
+- 不在開關列放快捷鍵。這與「觸控時隱藏快捷鍵提示」是兩件事。
 
 ## Decisions
 
-### 複用 `penMode`，不另建狀態
-
-`penMode` 的意思就是「筆在畫，手指不要誤觸」。這次要的手指行為是同一件事的完整版：誤觸從「部分工具仍可拖物件」收成「手指只移動畫面」。`penDetected` 繼續表示「看過筆，或使用者手動開過」，`togglePenMode` 本來就會把 `penDetected` 設為 true，選單才不會在手動開啟後把開關藏起來。
-
-另建 `fingerMode` 會和自動偵測、本地還原、既有按鈕各寫一份。沒有出現必須拆開的行為，所以不拆。
-
-### 手指能不能操作工具，收成純函式
-
-`fingerMayUseTool`、`shouldStartSingleFingerPan`、`pinchZoomScaleFactor`、`shouldIgnoreConcurrentTouch`、`shouldReleaseTouchGestureForPen`、`shouldAbortFreedrawForExtraTouch` 放在 `packages/excalidraw/components/penModePointer.ts`。`App` 只負責呼叫與改狀態。單測鎖這些分支，元件測試鎖畫布結果。
-
-判斷放在選取工具的 pointer down 之前。現在的 `allowOnPointerDown` 在選取處理之後，所以選取、套索仍會吃掉手指。筆模式的觸控在那之前就返回。
-
-### 單指平移走既有 `AppPan`
-
-對應 Obsidian Excalidraw 的 `penModeSingleFingerPanning`，以及 [excalidraw#8785](https://github.com/excalidraw/excalidraw/issues/8785)。不另寫一套捲動。`AppPan.start` 增加 `force`：筆模式、觸控、目前最多一個指標、且沒有筆按著時，用和手形工具相同的工作階段平移，並把後續 move 鎖在該 `pointerId`。第二根手指按下時，既有的 pointer down 清理會 `pan.end()`，雙指改由既有的多指手勢接手。滑鼠、手形工具、空白鍵、檢視模式的啟動條件不變。
-
-### 雙指縮放看手勢裡有沒有筆
-
-對應未合併的 [excalidraw#11536](https://github.com/excalidraw/excalidraw/pull/11536)，只吸收規則，不搬那份 diff。拿掉「自由畫筆且筆模式就把縮放係數設為 1」。另用一張 `pointerId → pointerType` 對照（不放進公開的 `Gesture` 值，避免改 `onPointerUpdate` 的 `pointersMap`）。係數只在對照裡有 `pen` 時為 1。平常兩根手指、筆已抬起，即使工具是自由畫筆也縮放。
-
-### 同時接觸
-
-- 筆按下時，若手勢表裡還有觸控，先清掉那些觸控並結束單指平移，再讓筆進入工具流程。這樣筆不會因為表裡留下的手指而一直滿足 `pointers.size > 1`（#9945）。筆模式開或關都做這一步，因為卡住發生在兩種情況；沒有手指殘留時，滑鼠與單指繪圖的路徑不變。
-- 筆模式中，用同步的 `activePenPointerId` 記錄正在按下的筆。這段期間的觸控直接返回：不進手勢表、不清理筆畫、不平移。窗口上的 move／up 也在節流前記濾掉，避免手掌移動蓋掉同一幀裡已經排好的筆移動。這是 [excalidraw#12397](https://github.com/excalidraw/excalidraw/pull/12397) 的行為。原 PR 只看 `lastPointerDownWith === "pen"` 且 `newElement` 是自由畫筆；這裡放寬到「筆模式且這支筆還按著」的所有工具，因為手掌一樣會打斷選取拖曳。範圍仍只在筆模式。
-- 筆模式關閉時，第二根手指碰到進行中的自由畫筆，繼續走 #6440：筆畫很短就捨棄。`shouldAbortFreedrawForExtraTouch` 在筆自己畫的那一筆上不成立，避免和上一條互相取消。
-
-第一個筆事件的 `setState` 是非同步的。`penDetected` 仍為 false 且 `activePenPointerId` 已記下時，視為筆模式已經生效，同一筆期間的手掌不會漏判。
-
-### 開關放在更多工具
-
-桌面 `Toolbar` 與手機 `MobileToolbar` 的三點選單都放同一個 `PenModeMenuItem`，緊接在雷射筆之後。使用既有 `DropdownMenu.ItemCheckbox`：勾選圖示加上 `aria-pressed` 表示開或關，`selected` 用現成的選取底色。點下去 `preventDefault`，選單保持打開，手指才看得見狀態切換。這一列的高度跟隨設定頁的尺寸段位，不在這裡寫死 44px。預設段位是大（選單項目高 40px）。特大才把選單項目加到至少 44px。文案沿用 `toolBar.penMode`，英文與繁體中文改成說明手指會平移與縮放；其他語系暫時留舊譯文。
-
-`togglePenMode(null)` 繼續反轉 `penMode`。不新做 action。
-
-### 上游 PR 的取捨
-
-- **#12397（手掌不要打斷筆畫）：採納行為，自己寫。** 這就是手指／手掌友善，改動停在指標過濾，風險低。實機手寫筆仍沒測，邏輯用元件測試鎖。
-- **#12146（可放大的變形把手）：不併入那份嵌入端 API。** 它是 `UIOptions.canvasHandleScale`，預設 1、範圍 1–2，動到選取與線段把手的繪製和命中。控制點變大改由設定頁的四段尺寸負責（預設大為 32px，特大為 44px），不是宿主倍率。像素與任務在 `add-ipad-settings-page`。
-
-### 長按選單
-
-筆模式開啟時，手指長按不再打開畫布選單。手指在這個模式只平移與縮放。筆模式關閉時的長按不變。
+- 開關列在兩個地方重複同一種版面：三點「更多工具」，以及設定頁主題與語系下方的手指模式區塊。右側用既有的 `Switch`，或「開」「關」文字，二擇一，不兩個都放。
+- 標籤的繁體中文就是「手指模式」，對應 `labels.fingerMode`。不用 `toolBar.penMode`。
+- 已知像素沿用既有四段，改成各項自己的值。順序是一般按鈕、大按鈕、選單項目高度、選單項目間距、縮放控制點：
+  - 小：32 / 36 / 32 / 1 / 8
+  - 中：36 / 39 / 36 / 4 / 20
+  - 大（預設）：40 / 42 / 40 / 6 / 32
+  - 特大：44 / 44 / 至少 44 / 8 / 44
+- 第五欄記在縮放控制點。旋轉控制點是另一項，不共用這一欄。見 Open questions。
+- 某一項選小，或手指模式為關時，該項用上游尺寸。關的時候不套用中、大、特大。
+- 設定頁上的選擇器是 `RadioGroup`。這條視覺規則的其餘部分在 `add-ipad-settings-page`。
 
 ## Risks / Trade-offs
 
-- [筆模式使用者原本用手指拖選取物件] → 這是規格要的改變，只發生在 `penMode === true`。關掉筆模式就回到舊行為。
-- [實機手掌可能被瀏覽器報成兩點觸控，或筆被報成 `touch`] → 與 #11536 相同的已知限制。筆被報成 touch 時無法區分，不在這次猜測。元件測試涵蓋我們看得到的 `pointerType`。
-- [單指平移與雙指縮放交界] → 第二指按下時結束 `AppPan`，避免兩套邏輯一起改捲動。剩下的那根手指要再按下才會開始新的單指平移。
-- [尚未在 iPad 上點過] → 測試用 jsdom 的 pointer 事件。實機是後續確認，不擋住這次分支。
+- 現有程式已把放大綁在 `penMode`。本規格不把這個綁定寫成需求，也不在這裡決定要保留或拆開。
+- 旋轉控制點還沒有中、大、特大的像素。規格只要求它是獨立項目、預設大、小為上游尺寸。
 
-## Migration Plan
+## Open questions
 
-沒有檔案或狀態遷移。`penMode` 仍寫在瀏覽器本地狀態。回退就是還原這次的指標分支與選單項目。
-
-## Open Questions
-
-沒有會改規格或任務拆分的未決問題。實機手感留到有 iPad 時再看，不改這次的分支。
+- 本分支已合併的程式仍改動畫布手勢，也把放大綁在 `penMode`。規格不再要求那些行為，也沒有安排把它們從程式刪除。要不要改回上游，這裡不決定。
+- 手指模式的開／關要不要獨立於上游 `penMode`。現有程式把放大綁在 `penMode`，而且只在粗指標時生效。使用者沒有決定以後開關寫入哪個狀態。在決定之前，規格只要求兩個地方的那一列顯示開或關，不規定狀態欄位。三點選單上的開／關就是這一列的右側，不是勾選圖示。
+- 放大是否只要開關為開就生效，或只在觸控時生效。隱藏快捷鍵提示已經寫明是觸控。放大沒有寫。
+- 旋轉控制點的中、大、特大像素。小是上游原本尺寸。既有第五欄（小 8、中 20、大 32、特大 44）先記在縮放控制點，因為該欄原本是 handle，旋轉控制點要另外定義。若第五欄不是縮放控制點，需要再確認。
+- 設定頁上，手指模式開關列與各尺寸選項哪一個在上。兩者都在主題與語系下面。

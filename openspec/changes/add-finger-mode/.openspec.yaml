@@ -1,5 +1,6 @@
 schema: spec-driven
 created: 2026-10-26
-goal: 筆模式下手指出來只平移與縮放畫布，筆繼續畫，兩者同時碰到螢幕時不把狀態弄亂。
+goal: 手指模式只放大列出的介面元素，並在觸控時隱藏快捷鍵提示。
 affected_areas:
   - packages/excalidraw
+  - excalidraw-app

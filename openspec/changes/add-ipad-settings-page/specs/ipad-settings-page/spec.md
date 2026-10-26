@@ -2,18 +2,23 @@
 
 ## Purpose
 
-提供一頁 iPad 風格的全螢幕設定，把上游致謝連結集中到 Special Thanks To，並用「手指模式」類別承接 finger mode 的細節選項。
+提供一頁沿用 Excalidraw 視覺的設定。致謝連結集中在 Special Thanks To。主題與語系在同一頁，手指模式的開關與各項尺寸放在它們下面。
 
 ## ADDED Requirements
 
-### Requirement: Full-screen settings layout
+### Requirement: Settings shell is Modal and Dialog
 
-設定頁 MUST 以全螢幕顯示。寬版面 SHALL 為左側類別清單、右側該類別的內容。
+設定頁 MUST 用 `Modal` 與 `Dialog`，MUST NOT 用固定全螢幕 div。左上角 SHALL 是返回按鈕。返回 MUST NOT 是 Close 按鈕，也 MUST NOT 是左側清單裡的一項。頁面 MUST 渲染在 `.excalidraw` 容器內，讓主題 token 生效。
 
-#### Scenario: Wide layout
+#### Scenario: Back button is at the top left
 
-- **WHEN** 使用者開啟設定且寬度足夠並排
-- **THEN** 左側是類別清單，右側是所選類別的內容
+- **WHEN** 使用者開啟設定
+- **THEN** 左上角有返回按鈕，頁面上沒有 Close，左側清單裡也沒有返回或 Close
+
+#### Scenario: The page sits inside the editor container
+
+- **WHEN** 使用者開啟設定
+- **THEN** 設定頁在 `.excalidraw` 容器內，亮色與暗色都使用該容器的 CSS 變數
 
 ### Requirement: Settings entry between Help and Reset canvas
 
@@ -24,28 +29,121 @@
 - **WHEN** 使用者在漢堡選單於說明與重設畫布之間選擇「設定」
 - **THEN** 設定頁開啟
 
-### Requirement: Settings category list
+### Requirement: No single-option sub-pages
 
-左側清單 SHALL 包含 Special Thanks To、關於、手指模式、偏好設定、主題、語系。Special Thanks To MUST 只佔一個項目，標籤文字 SHALL 原樣為 Special Thanks To。
+設定 MUST NOT 為只有一個選項的項目另開子頁。主題與語系 SHALL 在同一頁。手指模式開關列與各尺寸選擇 SHALL 在這一頁、主題與語系的下面。主題、語系、手指模式 MUST NOT 各自佔一頁。
 
-#### Scenario: Left list includes one Special Thanks To entry
+#### Scenario: Theme and language share one page
 
-- **WHEN** 使用者開啟設定頁
-- **THEN** 左側清單有一個 Special Thanks To，並且有關於、手指模式、偏好設定、主題、語系
+- **WHEN** 使用者開啟設定並查看主題
+- **THEN** 同一頁也能看到語系，而且沒有單獨的主題子頁或語系子頁
+
+#### Scenario: Finger mode options sit below theme and language
+
+- **WHEN** 使用者打開主題與語系那一頁
+- **THEN** 手指模式的開關列與各尺寸選擇都在主題與語系的下面
+
+### Requirement: About section
+
+設定 SHALL 有「關於」區段。這個區段 MUST NOT 包含 Excalidraw+、GitHub、追蹤我們、Discord、Sign up。
+
+#### Scenario: About is present
+
+- **WHEN** 使用者開啟設定
+- **THEN** 可以看到「關於」區段
+
+#### Scenario: About omits the credit links
+
+- **WHEN** 使用者查看「關於」
+- **THEN** 那裡沒有 Excalidraw+、GitHub、追蹤我們、Discord、Sign up
+
+### Requirement: Settings category rows match menu items
+
+類別列 SHALL 沿用 `.dropdown-menu-item` 的樣式，包含 `--border-radius-md`、hover 時的 `--button-hover-bg`、選中時的 `--color-primary-light`，以及 `--text-primary-color`。
+
+#### Scenario: Selected category uses the menu item treatment
+
+- **WHEN** 使用者在設定的類別列選中一項
+- **THEN** 該列使用 `.dropdown-menu-item` 的選中樣式，而不是另一套背景
+
+### Requirement: Boolean rows use Switch
+
+偏好設定裡的開關 SHALL 是標籤在左、`Switch` 在右。現有的 `ToggleRow`（只改背景的 `button[aria-pressed]`）MUST NOT 再使用。手指模式那一列的版面見下一條需求，不套用「只有標籤與 Switch」。
+
+#### Scenario: A preference toggle shows Switch
+
+- **WHEN** 使用者查看偏好設定裡的一項開關
+- **THEN** 標籤在左，右側是 `Switch`，不是只改變背景色的按鈕
+
+### Requirement: Single choices use RadioGroup
+
+框選方式、輸入裝置、主題，以及手指模式每一項的小、中、大、特大，SHALL 使用 `RadioGroup`。
+
+#### Scenario: Theme uses a radio group
+
+- **WHEN** 使用者在合併頁上看主題
+- **THEN** 主題的選項是 `RadioGroup`，不是一排 `ToggleRow`
+
+#### Scenario: Each finger mode item has its own radio group
+
+- **WHEN** 使用者查看手指模式的尺寸選擇
+- **THEN** 一般按鈕、大按鈕、選單項目高度、選單項目間距、縮放控制點、旋轉控制點各有一個 `RadioGroup`，預設都是大
+
+### Requirement: Section headers are quiet
+
+區段標題 MUST NOT 使用帶框線的 fieldset。標題 SHALL 約為 0.875rem、粗體，顏色 SHALL 為 `--color-gray-60`。
+
+#### Scenario: A section title has no fieldset border
+
+- **WHEN** 使用者看到設定裡的區段標題
+- **THEN** 標題沒有 fieldset 框線，字是粗體，顏色是 `--color-gray-60`
+
+### Requirement: Settings chrome uses design tokens
+
+設定頁樣式 MUST NOT 寫死 hex 或 px。圓角 SHALL 用 `--border-radius-md`，間距 SHALL 用 `--space-factor`，輸入控制 SHALL 用 `--input-*`，表面 SHALL 用 `--island-bg-color`，字型 SHALL 用 `--ui-font`。在 `.excalidraw--finger-targets` 底下，列的 `min-height` SHALL 為 `var(--finger-menu-item-height, 2rem)`。亮色與暗色 MUST 都只靠這些 CSS 變數。
+
+#### Scenario: Rows follow the finger menu height variable
+
+- **WHEN** 編輯器帶有 `.excalidraw--finger-targets`，使用者開啟設定
+- **THEN** 設定列的最小高度是 `var(--finger-menu-item-height, 2rem)`，不是寫死的 44px
+
+#### Scenario: Dark theme uses the same variables
+
+- **WHEN** 使用者在暗色主題開啟設定
+- **THEN** 背景、文字、框線與主色來自 `.excalidraw.theme--dark` 的 CSS 變數，樣式裡沒有寫死的 hex
+
+### Requirement: Finger mode row in settings
+
+設定頁的手指模式開關 SHALL 與三點選單同一版面。左側 SHALL 是手指圖示，且 MUST NOT 有勾選。中間 SHALL 只有「手指模式」。右側 SHALL 只有開／關，用 `Switch` 或「開」「關」。該列 MUST NOT 顯示快捷鍵、副標或其他說明。各尺寸項的值與「觸控時隱藏快捷鍵提示」SHALL 依 `add-finger-mode` 的 `finger-mode` 規格。
+
+#### Scenario: Settings finger row is icon, label, and state
+
+- **WHEN** 使用者在設定頁看到手指模式開關
+- **THEN** 左是手指圖示、中是「手指模式」、右是開或關，沒有勾選、快捷鍵、副標或說明
+
+#### Scenario: The settings row shows off
+
+- **WHEN** 手指模式為關，使用者查看設定頁的這一列
+- **THEN** 右側表示關
 
 ### Requirement: Credit links live only on Special Thanks To
 
-Special Thanks To 的右側 SHALL 包含這五個連結，且 MUST NOT 刪除：Excalidraw+、GitHub、追蹤我們、Discord、Sign up。同一頁 SHALL 有一句感謝 Excalidraw 原作者的普通文字，並 MUST NOT 另加 GitHub 網址；既有的 GitHub 連結就是出處。這五個連結 MUST NOT 出現在漢堡選單、右上角宣傳列，或任何其他設定類別（包含關於）。
+名為 Special Thanks To 的頁面 SHALL 包含這五個連結，且 MUST NOT 刪除：Excalidraw+、GitHub、追蹤我們、Discord、Sign up。同一頁 SHALL 有一句感謝 Excalidraw 原作者的普通文字，並 MUST NOT 另加 GitHub 網址。這五個連結 MUST NOT 出現在漢堡選單、右上角宣傳列，或任何其他設定區段（包含關於）。連結 SHALL 是顏色為 `--color-primary` 的文字連結。
 
-#### Scenario: The page shows five links and a plain thank-you sentence
+#### Scenario: The page name is exact
+
+- **WHEN** 使用者開啟設定並看到致謝頁
+- **THEN** 該頁名稱是 Special Thanks To
+
+#### Scenario: The page shows five links and a thank-you sentence
 
 - **WHEN** 使用者選擇 Special Thanks To
 - **THEN** 頁面有 Excalidraw+、GitHub、追蹤我們、Discord、Sign up，以及一句感謝原作者的文字，且沒有第二個 GitHub 網址
 
-#### Scenario: Other categories omit the credit links
+#### Scenario: Credit links are primary text links
 
-- **WHEN** 使用者選擇關於，或 Special Thanks To 以外的類別
-- **THEN** 該類別沒有 Excalidraw+、GitHub、追蹤我們、Discord、Sign up
+- **WHEN** 使用者查看 Special Thanks To 的連結
+- **THEN** 它們是 `--color-primary` 的文字連結，不是與類別列相同的按鈕列
 
 #### Scenario: Hamburger menu and top promo omit the links
 
@@ -54,12 +152,12 @@ Special Thanks To 的右側 SHALL 包含這五個連結，且 MUST NOT 刪除：
 
 ### Requirement: Preferences theme and language leave the hamburger menu
 
-偏好設定的全部項目、主題、語系 SHALL 離開漢堡選單，並出現在設定頁各自的類別。
+偏好設定的全部項目、主題、語系 SHALL 離開漢堡選單，並出現在設定頁。主題與語系在合併後的那一頁，不各佔一頁。
 
 #### Scenario: Preferences theme and language are in settings
 
 - **WHEN** 使用者開啟設定頁
-- **THEN** 可以在對應類別找到偏好設定的全部既有項目、主題與語系
+- **THEN** 可以找到偏好設定的全部既有項目，以及同一頁上的主題與語系
 
 ### Requirement: Hamburger menu keeps immediate operations
 
@@ -77,7 +175,7 @@ Special Thanks To 的右側 SHALL 包含這五個連結，且 MUST NOT 刪除：
 
 ### Requirement: Moved settings keep their behavior
 
-移入設定頁的每個既有設定 SHALL 保持搬移前的行為與持久化結果。本變更 MUST NOT 新增設定頁與選單整理以外的功能。
+移入設定頁的每個既有設定 SHALL 保持搬移前的行為與持久化結果。本變更 MUST NOT 新增設定頁、選單整理與手指模式選項以外的功能。
 
 #### Scenario: A moved preference still persists
 
@@ -86,48 +184,38 @@ Special Thanks To 的右側 SHALL 包含這五個連結，且 MUST NOT 刪除：
 
 ### Requirement: Plus and sign-up links are moved not removed
 
-Excalidraw+ 與 Sign up 連結 SHALL 被搬到設定頁的 Special Thanks To。本變更 MUST NOT 刪除這兩個連結。
+Excalidraw+ 與 Sign up 連結 SHALL 被搬到 Special Thanks To。本變更 MUST NOT 刪除這兩個連結。
 
 #### Scenario: Links remain reachable
 
-- **WHEN** 使用者開啟設定頁的 Special Thanks To
+- **WHEN** 使用者開啟 Special Thanks To
 - **THEN** Excalidraw+ 與 Sign up 連結仍可使用，目的地與搬移前相同
 
-### Requirement: Finger-mode details live in settings
+### Requirement: Chinese locales include the new strings
 
-設定頁 SHALL 有「手指模式」類別，以一個尺寸選項同時控制一般按鈕、大按鈕、選單項目與變形控制點。段位 SHALL 為小、中、大、特大。預設 SHALL 為大。該類別 MUST NOT 包含 ON／OFF 開關。開關 SHALL 只出現在三點「更多工具」選單。筆模式開啟且主要指標為粗指標時，尺寸 SHALL 依序為一般按鈕、大按鈕、選單高度、選單間距、變形控制點：小 32／36／32／1／8px，中 36／39／36／4／20px，大 40／42／40／6／32px，特大 44／44／至少 44／8／44px。筆模式關閉或指標不是粗指標時 SHALL 維持上游尺寸。
+`zh-TW.json` 與 `zh-CN.json` SHALL 為每個新介面字串提供譯文。`labels.fingerMode` 的繁體中文 SHALL 是「手指模式」。`labels.specialThanksTo` 的英文 SHALL 正好是 Special Thanks To。
 
-#### Scenario: Toggle is only in the more-tools menu
+#### Scenario: Both Chinese files translate the page and section titles
 
-- **WHEN** 使用者打開三點「更多工具」選單
-- **THEN** finger mode 的控制只有 ON／OFF 開關，沒有尺寸段位
+- **WHEN** 查看 zh-TW 與 zh-CN
+- **THEN** `labels.specialThanksTo`、`labels.specialThanksSentence`、`labels.about`、`labels.fingerMode` 在兩個檔裡都有譯文
 
-#### Scenario: Default tier is Large
+#### Scenario: Both Chinese files translate the size labels
 
-- **WHEN** 使用者尚未改過手指模式尺寸，並在設定頁打開「手指模式」
-- **THEN** 選中的段位是大，且沒有 ON／OFF 開關
+- **WHEN** 查看 zh-TW 與 zh-CN
+- **THEN** `labels.fingerModeSizeSmall`、`labels.fingerModeSizeMedium`、`labels.fingerModeSizeLarge`、`labels.fingerModeSizeExtraLarge` 在兩個檔裡都有譯文
 
-#### Scenario: Small keeps upstream sizes
+#### Scenario: Both Chinese files translate the per-item names
 
-- **WHEN** 段位是小，且筆模式開啟、主要指標為粗指標
-- **THEN** 一般按鈕為 32px、大按鈕為 36px、選單項目高度為 32px 且間距為 1px、變形控制點為 8px
+- **WHEN** 查看 zh-TW 與 zh-CN
+- **THEN** `labels.fingerModeDefaultButton`、`labels.fingerModeLargeButton`、`labels.fingerModeMenuItemHeight`、`labels.fingerModeMenuItemGap`、`labels.fingerModeScaleHandle`、`labels.fingerModeRotateHandle` 在兩個檔裡都有譯文
 
-#### Scenario: Medium sizes
+#### Scenario: Text on and off states are translated when used
 
-- **WHEN** 段位是中，且筆模式開啟、主要指標為粗指標
-- **THEN** 一般按鈕為 36px、大按鈕為 39px、選單項目高度為 36px 且間距為 4px、變形控制點為 20px
+- **WHEN** 開／關用文字而不是 `Switch`
+- **THEN** 兩個中文語系檔都有 `labels.fingerModeOn` 與 `labels.fingerModeOff`
 
-#### Scenario: Large sizes
+#### Scenario: The thanks title has a Chinese translation
 
-- **WHEN** 段位是大，且筆模式開啟、主要指標為粗指標
-- **THEN** 一般按鈕為 40px、大按鈕為 42px、選單項目高度為 40px 且間距為 6px、變形控制點為 32px
-
-#### Scenario: Extra large is the 44px target
-
-- **WHEN** 段位是特大，且筆模式開啟、主要指標為粗指標
-- **THEN** 一般按鈕與大按鈕皆為 44px、選單項目高度至少為 44px 且間距為 8px、變形控制點為 44px
-
-#### Scenario: Fine pointer keeps upstream sizes
-
-- **WHEN** 儲存的段位是大或特大，但筆模式為關閉，或主要指標不是粗指標
-- **THEN** 按鈕、選單項目與變形控制點維持上游尺寸
+- **WHEN** 介面語系是 zh-TW 或 zh-CN
+- **THEN** `labels.specialThanksTo` 顯示該語系的譯文，英文語系則顯示 Special Thanks To
