@@ -86,34 +86,39 @@ Special Thanks To 的右側 SHALL 包含這五個連結，且 MUST NOT 刪除：
 
 ### Requirement: Finger-mode details live in settings
 
-設定頁 SHALL 有「手指模式」類別，用來控制細節選項。該類別 MUST NOT 包含 ON／OFF 開關。開關 SHALL 只出現在三點「更多工具」選單，且該選單項目只是開關。按鈕、變形控制點與選單項目的尺寸 SHALL 分成四段：小、中、大、特大。小 SHALL 為 Excalidraw 原本尺寸。中與大 SHALL 為小與特大之間的兩段。預設 SHALL 為大。特大 SHALL 為 44px 目標：按鈕 44px、變形控制點 40–44px、選單項目高度至少 44px。
+設定頁 SHALL 有「手指模式」類別，以一個尺寸選項同時控制一般按鈕、大按鈕、選單項目與變形控制點。段位 SHALL 為小、中、大、特大。預設 SHALL 為大。該類別 MUST NOT 包含 ON／OFF 開關。開關 SHALL 只出現在三點「更多工具」選單。筆模式開啟且主要指標為粗指標時，尺寸 SHALL 依序為一般按鈕、大按鈕、選單高度、選單間距、變形控制點：小 32／36／32／1／8px，中 36／39／36／4／20px，大 40／42／40／6／32px，特大 44／44／至少 44／8／44px。筆模式關閉或指標不是粗指標時 SHALL 維持上游尺寸。
 
 #### Scenario: Toggle is only in the more-tools menu
 
 - **WHEN** 使用者打開三點「更多工具」選單
-- **THEN** finger mode 的控制只有 ON／OFF 開關，沒有尺寸四段
+- **THEN** finger mode 的控制只有 ON／OFF 開關，沒有尺寸段位
 
-#### Scenario: Size tiers are in the settings category
+#### Scenario: Default tier is Large
 
-- **WHEN** finger mode 為開啟且使用者在設定頁選擇「手指模式」
-- **THEN** 右側提供小、中、大、特大，且沒有 ON／OFF 開關
+- **WHEN** 使用者尚未改過手指模式尺寸，並在設定頁打開「手指模式」
+- **THEN** 選中的段位是大，且沒有 ON／OFF 開關
 
-#### Scenario: Default tier is large
+#### Scenario: Small keeps upstream sizes
 
-- **WHEN** 使用者尚未改過手指模式尺寸
-- **THEN** 目前尺寸是大
+- **WHEN** 段位是小，且筆模式開啟、主要指標為粗指標
+- **THEN** 一般按鈕為 32px、大按鈕為 36px、選單項目高度為 32px 且間距為 1px、變形控制點為 8px
 
-#### Scenario: Small keeps original sizes
+#### Scenario: Medium sizes
 
-- **WHEN** 使用者選擇小
-- **THEN** 按鈕、變形控制點與選單項目使用 Excalidraw 原本尺寸
+- **WHEN** 段位是中，且筆模式開啟、主要指標為粗指標
+- **THEN** 一般按鈕為 36px、大按鈕為 39px、選單項目高度為 36px 且間距為 4px、變形控制點為 20px
 
-#### Scenario: Extra large is the forty-four pixel target
+#### Scenario: Large sizes
 
-- **WHEN** 使用者選擇特大
-- **THEN** 按鈕為 44px，變形控制點為 40–44px，選單項目高度至少 44px
+- **WHEN** 段位是大，且筆模式開啟、主要指標為粗指標
+- **THEN** 一般按鈕為 40px、大按鈕為 42px、選單項目高度為 40px 且間距為 6px、變形控制點為 32px
 
-#### Scenario: Medium and large sit between the ends
+#### Scenario: Extra large is the 44px target
 
-- **WHEN** 使用者選擇中或大
-- **THEN** 該段大於小的原本尺寸，且小於特大的 44px 目標
+- **WHEN** 段位是特大，且筆模式開啟、主要指標為粗指標
+- **THEN** 一般按鈕與大按鈕皆為 44px、選單項目高度至少為 44px 且間距為 8px、變形控制點為 44px
+
+#### Scenario: Fine pointer keeps upstream sizes
+
+- **WHEN** 儲存的段位是大或特大，但筆模式為關閉，或主要指標不是粗指標
+- **THEN** 按鈕、選單項目與變形控制點維持上游尺寸
