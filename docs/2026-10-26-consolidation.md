@@ -11,7 +11,8 @@
 - Apple Pencil 的壓力與傾斜。
 - 簡易的動畫編輯與播放。
 - iPad 與桌面同步，供線上教學使用：iPad 當白板，筆電分享螢幕。
-- 分頁／投影片（paging／slides）。
+- 分頁／投影片（paging／slides）。這是開發目標第 2 項，規格在 `openspec/changes/add-multipage-slides/`。
+- 簡單的本地 workspace。這是開發目標第 3 項，規格在 `openspec/changes/add-local-workspace/`。
 - 開發方式走 GitHub：只用分支，不直接改 `master`；每個正式變更用 OpenSpec 記錄；角色為 architect、implementer、tester、recorder。
 
 ## Design principles

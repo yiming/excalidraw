@@ -2,60 +2,70 @@
 
 ## Purpose
 
-先以第二階段 2a 限制檔案瀏覽器的本地儲存，最多 5 個檔案且合計最多 20 頁。2b 在存檔後提供「移到 Google Drive」，完成後移除本地複本並釋出名額；達到上限時與刪除並列。
+先以第二階段 2a 限制檔案瀏覽器的本地儲存：最多 2 個檔案，每個檔案最多 10 頁，計入的頁數合計最多 20 頁。無限畫布的頁暫時不計入這 20 頁。2b 在存檔後提供「移到 Google Drive」，完成後移除本地複本並釋出名額；達到上限時與刪除並列。
 
 ## ADDED Requirements
 
-### Requirement: At most five local files
+### Requirement: At most two local files
 
-本地儲存的檔案數 MUST NOT 超過 5。此上限與總頁數上限 SHALL 同時生效。2a 與 2b SHALL 都遵守它。
+計入檔數的本地檔案 MUST NOT 超過 2。此上限與每個檔案最多 10 頁、計入頁數合計最多 20 SHALL 同時生效。2a 與 2b SHALL 都遵守它。無限畫布的檔案是否計入這 2 個檔，本需求不決定。
 
-#### Scenario: A fifth file is allowed
+#### Scenario: A second file is allowed
 
-- **WHEN** 本地已有 4 個檔案，且合計頁數加上新檔後仍不超過 20
-- **THEN** 可以建立第 5 個檔案
+- **WHEN** 本地已有 1 個計入檔數的檔案，新檔與既有檔各自不超過 10 頁，且計入的頁數合計仍不超過 20
+- **THEN** 可以建立第 2 個檔案
 
-#### Scenario: A sixth file is refused in phase 2a
+#### Scenario: A third counted file warns without blocking in phase 2a
 
-- **WHEN** 處於 2a，本地已有 5 個檔案，且使用者要新建檔案
-- **THEN** 不建立該檔案，並提示刪除檔案或頁面，或匯出成檔案（例如 `.excalidraw`），且不提供 Google Drive
+- **WHEN** 處於 2a，本地已有 2 個計入檔數的檔案，且使用者要新建另一個計入檔數的檔案
+- **THEN** 不擋住該動作，並顯示軟警告，讓使用者選擇刪除舊檔或匯出成檔案（例如 `.excalidraw`），且不提供 Google Drive
 
-### Requirement: At most twenty pages in total
+### Requirement: At most ten pages per file and twenty counted pages
 
-所有本地檔案的頁數合計 MUST NOT 超過 20。此上限與檔案數上限 SHALL 同時生效。2a 與 2b SHALL 都遵守它。
+每個檔案的頁數 MUST NOT 超過 10。計入合計的頁數 MUST NOT 超過 20。無限畫布的頁暫時 MUST NOT 計入這 20 頁。這是暫時決定，以後再審查。2a 與 2b SHALL 都遵守這些上限。
 
-#### Scenario: Combinations inside both limits
+#### Scenario: Two full files stay inside the total
 
-- **WHEN** 本地是 5 個檔各 4 頁，或 2 個檔各 10 頁，或 1 個檔 20 頁
-- **THEN** 這些組合可以存在
+- **WHEN** 本地是 2 個檔各 10 頁
+- **THEN** 這個組合可以存在
 
-#### Scenario: Another page at twenty is refused in phase 2a
+#### Scenario: An eleventh page in one file warns without blocking in phase 2a
 
-- **WHEN** 處於 2a，合計已有 20 頁，且使用者要新增一頁
-- **THEN** 不新增該頁，並提示刪除檔案或頁面，或匯出成檔案（例如 `.excalidraw`），且不提供 Google Drive
+- **WHEN** 處於 2a，一個檔案已有 10 頁，且使用者要再新增一頁
+- **THEN** 不擋住該動作，並顯示軟警告，讓使用者選擇刪除舊檔或匯出成檔案（例如 `.excalidraw`），且不提供 Google Drive
+
+#### Scenario: A twenty-first counted page warns without blocking in phase 2a
+
+- **WHEN** 處於 2a，計入的頁數合計已有 20，且使用者要再新增一頁計入的頁
+- **THEN** 不擋住該動作，並顯示軟警告，讓使用者選擇刪除舊檔或匯出成檔案（例如 `.excalidraw`），且不提供 Google Drive
+
+#### Scenario: An infinite canvas page is not counted yet
+
+- **WHEN** 本地有一個無限畫布
+- **THEN** 它的頁不計入合計 20 頁
 
 ### Requirement: The limits apply together
 
-檔案數少於 5 時，頁數合計仍 MUST NOT 超過 20。頁數合計少於 20 時，檔案數仍 MUST NOT 超過 5。
+檔案數少於 2 時，每個檔案仍 MUST NOT 超過 10 頁，計入的頁數合計仍 MUST NOT 超過 20。計入的頁數合計少於 20 時，計入檔數的檔案仍 MUST NOT 超過 2。
 
-#### Scenario: One file stops at twenty pages
+#### Scenario: One file at ten pages warns without blocking
 
-- **WHEN** 處於 2a，只有 1 個檔案且已有 20 頁，使用者要再新增一頁
-- **THEN** 不新增該頁，並提示刪除或匯出成檔案，且不提供 Google Drive
+- **WHEN** 處於 2a，只有 1 個檔案且已有 10 頁，使用者要再新增一頁
+- **THEN** 不擋住該動作，並顯示軟警告，讓使用者選擇刪除舊檔或匯出成檔案，且不提供 Google Drive
 
-#### Scenario: Five small files stop at five files
+#### Scenario: Two small files warn without blocking
 
-- **WHEN** 處於 2a，已有 5 個檔案且合計頁數少於 20，使用者要新建檔案
-- **THEN** 不建立該檔案，並提示刪除或匯出成檔案，且不提供 Google Drive
+- **WHEN** 處於 2a，已有 2 個計入檔數的檔案且計入的頁數合計少於 20，使用者要新建另一個計入檔數的檔案
+- **THEN** 不擋住該動作，並顯示軟警告，讓使用者選擇刪除舊檔或匯出成檔案，且不提供 Google Drive
 
 ### Requirement: Phase 2b limit prompt offers move beside delete
 
-2b MUST 排在 2a 之後。達到上限時，2b 的提示 SHALL 在刪除之外提供「移到 Google Drive」，並 MUST NOT 放寬 5 個檔或合計 20 頁。2a MUST NOT 提供這一項。2a 的匯出成檔案仍可使用。
+2b MUST 排在 2a 之後。達到上限時，2b 的提示 SHALL 在刪除之外提供「移到 Google Drive」，並 MUST NOT 放寬 2 個檔、每個檔案 10 頁，或計入合計 20 頁。2a MUST NOT 提供這一項。2a 的匯出成檔案仍可使用。
 
 #### Scenario: The limit prompt offers move in phase 2b
 
 - **WHEN** 處於 2b，且新建檔案或新增一頁會超過任一上限
-- **THEN** 不建立該檔或該頁，提示提供刪除以及「移到 Google Drive」
+- **THEN** 不擋住該動作，並顯示軟警告，提示提供刪除以及「移到 Google Drive」
 
 #### Scenario: Phase 2a has no move option
 
@@ -74,7 +84,7 @@
 #### Scenario: A completed move frees the local slot
 
 - **WHEN** 使用者對一個本地檔案完成「移到 Google Drive」
-- **THEN** 本地不再有該檔，它的檔案名額與頁數不再計入 5 個檔與合計 20 頁
+- **THEN** 本地不再有該檔，它的檔案名額與頁數不再計入 2 個檔、每個檔案 10 頁與計入合計 20 頁
 
 #### Scenario: Phase 2a does not offer move after save
 

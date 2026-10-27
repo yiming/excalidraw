@@ -31,8 +31,8 @@
 ## 6. 視覺
 
 - [x] 6.1 類別列沿用 `.dropdown-menu-item`。
-- [x] 6.2 偏好設定的開關改為標籤在左、`Switch` 在右。拿掉 `ToggleRow`。
-- [x] 6.3 單選設定也用 `RadioGroup`。
+- [x] 6.2 偏好設定的開關沿用主選單核取列（勾選圖示或空白圖示）。拿掉 `ToggleRow` 與自製 `Switch` 列。
+- [x] 6.3 框選、輸入裝置與主題用 `DropdownMenuItemContentRadio`。主題是圖示。手指模式各尺寸仍用 `RadioGroup`。
 - [x] 6.4 區段標題不要 fieldset 框線。約 0.875rem、粗體、`--color-gray-60`。
 - [x] 6.5 `.excalidraw--finger-targets` 下的列使用 `min-height: var(--finger-menu-item-height, 2rem)`。
 - [x] 6.6 設定頁樣式不寫死 hex 或 px，改用 `--border-radius-md`、`--space-factor`、`--input-*`、`--island-bg-color`、`--ui-font`。

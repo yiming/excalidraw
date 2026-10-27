@@ -175,7 +175,18 @@ describe("iPad settings page", () => {
         group?.querySelector(".RadioGroup__choice.active")?.textContent,
       ).toBe("Large");
     }
-    const themeControl = detail?.querySelector("[name='settings-theme']");
+    const themeChoices = Array.from(
+      detail?.querySelectorAll("input[name='settings-theme']") ?? [],
+    );
+    expect(themeChoices).toHaveLength(3);
+    expect(
+      themeChoices.map((input) => input.getAttribute("aria-label")),
+    ).toEqual(["Light mode", "Dark mode", "System mode"]);
+    for (const input of themeChoices) {
+      expect(input.parentElement?.querySelector("svg")).not.toBeNull();
+      expect(input.parentElement?.textContent?.trim()).toBe("");
+    }
+    const themeControl = themeChoices[0];
     const languageControl = detail?.querySelector("select");
     const sizeControl = detail?.querySelector(
       "[data-testid='settings-size-default-button']",
@@ -205,20 +216,56 @@ describe("iPad settings page", () => {
     expect(h.state.fingerModeRotateHandle).toBe("large");
   });
 
-  it("uses Switch for a preference and closes on Escape", () => {
+  it("keeps the section list beside the detail on every section", () => {
+    openSettings();
+    const sections = [
+      "settings-category-thanks",
+      "settings-category-preferences",
+      "settings-category-themeLanguage",
+      "settings-category-about",
+    ];
+    for (const id of sections) {
+      fireEvent.click(document.querySelector(`[data-testid='${id}']`)!);
+      const layout = document.querySelector("[data-testid='settings-dialog']");
+      const list = layout?.querySelector(
+        "[data-testid='settings-category-list']",
+      );
+      const detail = layout?.querySelector("[data-testid='settings-detail']");
+      expect(list).not.toBeNull();
+      expect(detail).not.toBeNull();
+      expect(
+        list!.compareDocumentPosition(detail!) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+      ).not.toBe(0);
+    }
+    expect(document.querySelector(".Modal.AppSettings")).not.toBeNull();
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(h.state.openDialog).toBeNull();
+  });
+
+  it("uses a menu checkbox for a preference and closes on Escape", () => {
     openSettings();
     fireEvent.click(
       document.querySelector("[data-testid='settings-category-preferences']")!,
     );
-    const grid = document.querySelector(
-      "input[name='settings-grid']",
-    ) as HTMLInputElement;
-    expect(grid).not.toBeNull();
+    const detail = document.querySelector("[data-testid='settings-detail']");
+    expect(detail?.textContent).toContain("Wrap");
+    expect(detail?.textContent).toContain("Trackpad");
+    expect(detail?.querySelector(".Switch")).toBeNull();
+    const grid = document.querySelector("[data-testid='settings-grid']");
+    expect(grid?.getAttribute("aria-checked")).toBe("false");
     expect(
       document.querySelector("[data-testid='settings-dialog'] [aria-pressed]"),
     ).toBeNull();
-    fireEvent.click(grid);
+    fireEvent.click(grid!);
     expect(h.state.gridModeEnabled).toBe(true);
+    expect(
+      document
+        .querySelector("[data-testid='settings-grid']")
+        ?.getAttribute("aria-checked"),
+    ).toBe("true");
+    fireEvent.click(document.querySelector("input[aria-label='Overlap']")!);
+    expect(h.state.boxSelectionMode).toBe("overlap");
     fireEvent.keyDown(document, { key: "Escape" });
     expect(h.state.openDialog).toBeNull();
   });

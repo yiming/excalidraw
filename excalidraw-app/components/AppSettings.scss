@@ -1,137 +1,176 @@
+.excalidraw .Modal.AppSettings {
+  position: fixed;
+  inset: 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
+}
+
+.excalidraw .Modal.AppSettings .Modal__content {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  overflow: hidden;
+  border-radius: 0;
+}
+
+.excalidraw .Modal.AppSettings .Island {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.excalidraw .Modal.AppSettings .Dialog__title {
+  flex: none;
+}
+
+.excalidraw .Modal.AppSettings .Dialog__content,
+.excalidraw .Modal.AppSettings .Dialog__close + .Dialog__content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  margin-top: 0 !important;
+  height: auto !important;
+  overflow: hidden;
+}
+
 .AppSettings__layout {
   display: flex;
+  flex: 1 1 auto;
+  align-items: stretch;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
   gap: calc(var(--space-factor) * 6);
-  color: var(--text-primary-color);
-  font-family: var(--ui-font);
-  background: var(--island-bg-color);
 }
 
 .AppSettings__list,
 .AppSettings__detail {
   min-width: 0;
+  min-height: 0;
+  overflow: auto;
 }
 
 .AppSettings__list {
-  display: flex;
-  flex: 0 0 calc(var(--space-factor) * 56);
-  flex-direction: column;
-  gap: calc(var(--space-factor) * 1);
-  border-inline-end: solid var(--default-border-color);
-  padding-inline-end: calc(var(--space-factor) * 3);
+  flex: 0 1 14rem;
+  max-width: 40%;
 }
 
 .AppSettings__detail {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: calc(var(--space-factor) * 4);
+  flex: 1 1 auto;
 }
 
 .AppSettings .Dialog__close {
   display: none;
 }
 
-.AppSettings .Dialog__close + .Dialog__content {
-  height: auto !important;
-  margin-top: 0 !important;
-}
-
-.AppSettings__back {
-  margin: 0;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: var(--text-primary-color);
-  font-family: var(--ui-font);
-  font-size: 0.875rem;
-  cursor: pointer;
-}
-
-.AppSettings__section {
-  margin: 0;
-  color: var(--color-gray-60);
-  font-size: 0.875rem;
-  font-weight: 700;
-}
-
-.AppSettings .dropdown-menu-item {
-  display: flex;
-  align-items: center;
-  box-sizing: border-box;
-  width: 100%;
-  min-height: var(--finger-menu-item-height, 2rem);
-  height: auto;
-  padding: 0 calc(var(--space-factor) * 2);
-  border: none;
-  border-radius: var(--border-radius-md);
-  background-color: transparent;
-  color: var(--text-primary-color);
-  font-family: var(--ui-font);
-  font-size: 0.875rem;
-  text-align: start;
-  cursor: pointer;
-
-  &:hover {
-    background-color: var(--button-hover-bg);
+// The dialog portal is not the editor root, so the menu shell cannot be an
+// Island (Modal resets those). Match the menu content's own padding, and let
+// labels wrap instead of ellipsizing when zh-TW / zh-CN runs long.
+.excalidraw .Modal.AppSettings {
+  .dropdown-menu {
+    max-width: 100%;
+    width: 100%;
+    min-width: 0;
+    z-index: auto;
   }
 
-  &.dropdown-menu-item--selected {
-    background-color: var(--color-primary-light);
+  .dropdown-menu-container {
+    box-sizing: border-box;
+    max-width: 100%;
+    max-height: none;
+    min-width: 0;
+    padding: calc(2 * var(--space-factor));
+    border-radius: var(--border-radius-lg);
+    gap: var(--finger-menu-gap, 1px);
   }
-}
 
-.AppSettings__switch-row {
-  justify-content: space-between;
-  gap: calc(var(--space-factor) * 2);
-}
+  .dropdown-menu-item,
+  .dropdown-menu-item-bare {
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    height: auto;
+    flex-wrap: wrap;
+    row-gap: calc(var(--space-factor) * 2);
+    min-height: var(--finger-menu-item-height, 2rem);
 
-.AppSettings__finger {
-  gap: calc(var(--space-factor) * 2);
-  cursor: pointer;
+    @media screen and (min-width: 1921px) {
+      min-height: var(--finger-menu-item-height, 2.25rem);
+    }
+  }
+
+  .dropdown-menu-item__icon,
+  .dropdown-menu-item__badge {
+    flex: none;
+  }
 
   .dropdown-menu-item__text {
-    flex: 1;
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
   }
 
-  svg {
-    width: 1rem;
-    height: 1rem;
-  }
-}
-
-.AppSettings__group {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--space-factor) * 2);
-}
-
-.AppSettings__sentence {
-  margin: 0;
-  color: var(--text-primary-color);
-  font-family: var(--ui-font);
-}
-
-.AppSettings__link {
-  display: block;
-  color: var(--color-primary);
-  font-family: var(--ui-font);
-  text-decoration: none;
-}
-
-.AppSettings__links {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--space-factor) * 2);
-}
-
-@media (max-width: 48rem) {
-  .AppSettings__layout {
-    flex-direction: column;
+  .dropdown-menu-item__text > span {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
   }
 
-  .AppSettings__list {
-    flex-basis: auto;
-    border-inline-end: none;
-    padding-inline-end: 0;
+  .dropdown-menu-group {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .dropdown-menu-group-title,
+  .excalidraw__paragraph {
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+
+  .RadioGroup {
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+
+  .dropdown-menu-item-bare .RadioGroup {
+    flex: 1 1 auto;
+    min-width: #{"min(100%, max-content)"};
+  }
+
+  .RadioGroup__choice {
+    height: auto;
+    min-height: 1.5rem;
+    line-height: 1.25;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .dropdown-select__language {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
   }
 }

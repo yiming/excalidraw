@@ -25,19 +25,38 @@ import {
   fingerModeStyle,
   type FingerModeSizeTier,
 } from "@excalidraw/excalidraw/components/fingerMode";
-import { fingerIcon } from "@excalidraw/excalidraw/components/icons";
+import {
+  checkIcon,
+  DeviceDesktopIcon,
+  DiscordIcon,
+  emptyIcon,
+  fingerIcon,
+  GithubIcon,
+  loginIcon,
+  MoonIcon,
+  PlusPromoIcon,
+  SunIcon,
+  XBrandIcon,
+} from "@excalidraw/excalidraw/components/icons";
 import { RadioGroup } from "@excalidraw/excalidraw/components/RadioGroup";
 import { Switch } from "@excalidraw/excalidraw/components/Switch";
+import { getDropdownMenuItemClassName } from "@excalidraw/excalidraw/components/dropdownMenu/common";
+import DropdownMenuGroup from "@excalidraw/excalidraw/components/dropdownMenu/DropdownMenuGroup";
+import MenuItemContent from "@excalidraw/excalidraw/components/dropdownMenu/DropdownMenuItemContent";
+import DropdownMenuItemContentRadio from "@excalidraw/excalidraw/components/dropdownMenu/DropdownMenuItemContentRadio";
 import { useUIAppState } from "@excalidraw/excalidraw/context/ui-appState";
 import { useI18n } from "@excalidraw/excalidraw/i18n";
 import { resolveInputDevice } from "@excalidraw/excalidraw/appState";
 
 import type { Theme } from "@excalidraw/element/types";
+import type { InputDevice } from "@excalidraw/excalidraw/types";
 
 import { LanguageList } from "../app-language/LanguageList";
 import { isExcalidrawPlusSignedUser } from "../app_constants";
 
 import "./AppSettings.scss";
+
+import type { JSX } from "react";
 
 const CATEGORIES = ["thanks", "preferences", "themeLanguage", "about"] as const;
 
@@ -59,21 +78,56 @@ const sizeLabel = (
   }
 };
 
-const SwitchRow = ({
-  name,
+/** Same shell as a dropdown menu, without Radix, so it can live in the dialog. */
+const MenuShell = ({ children }: { children: React.ReactNode }) => (
+  <div className="dropdown-menu">
+    <div className="dropdown-menu-container">{children}</div>
+  </div>
+);
+
+const PreferenceCheckbox = ({
   checked,
   label,
-  onChange,
+  testId,
+  onToggle,
 }: {
-  name: string;
   checked: boolean;
   label: string;
-  onChange: (value: boolean) => void;
+  testId: string;
+  onToggle: () => void;
 }) => (
-  <div className="dropdown-menu-item AppSettings__switch-row">
-    <span>{label}</span>
-    <Switch name={name} checked={checked} title={label} onChange={onChange} />
-  </div>
+  <button
+    type="button"
+    className={getDropdownMenuItemClassName()}
+    role="menuitemcheckbox"
+    aria-checked={checked}
+    data-testid={testId}
+    onClick={onToggle}
+  >
+    <MenuItemContent icon={checked ? checkIcon : emptyIcon}>
+      {label}
+    </MenuItemContent>
+  </button>
+);
+
+const SettingsLink = ({
+  href,
+  icon,
+  children,
+  testId,
+}: {
+  href: string;
+  icon?: JSX.Element;
+  children: React.ReactNode;
+  testId?: string;
+}) => (
+  <a
+    className={getDropdownMenuItemClassName()}
+    href={href}
+    data-testid={testId}
+  >
+    <MenuItemContent icon={icon}>{children}</MenuItemContent>
+  </a>
 );
 
 export const AppSettings = ({ theme }: { theme: Theme | "system" }) => {
@@ -126,7 +180,86 @@ export const AppSettings = ({ theme }: { theme: Theme | "system" }) => {
   const sizeChoices = FINGER_MODE_SIZE_TIERS.map((tier) => ({
     value: tier,
     label: sizeLabel(tier, t),
+    ariaLabel: sizeLabel(tier, t),
   }));
+
+  const preferences: Array<{
+    testId: string;
+    checked: boolean;
+    label: string;
+    onToggle: () => void;
+  }> = [
+    {
+      testId: "settings-tool-lock",
+      checked: appState.activeTool.locked,
+      label: t("labels.preferences_toolLock"),
+      onToggle: () => app.toggleLock(),
+    },
+    {
+      testId: "settings-objects-snap",
+      checked: appState.objectsSnapModeEnabled,
+      label: t("buttons.objectsSnapMode"),
+      onToggle: () => run(actionToggleObjectsSnapMode),
+    },
+    {
+      testId: "settings-grid",
+      checked: appState.gridModeEnabled,
+      label: t("labels.toggleGrid"),
+      onToggle: () => run(actionToggleGridMode),
+    },
+    {
+      testId: "settings-zen",
+      checked: appState.zenModeEnabled,
+      label: t("buttons.zenMode"),
+      onToggle: () => run(actionToggleZenMode),
+    },
+  ];
+
+  if (actionManager.isActionEnabled(actionToggleViewMode)) {
+    preferences.push({
+      testId: "settings-view-mode",
+      checked: appState.viewModeEnabled,
+      label: t("labels.viewMode"),
+      onToggle: () => run(actionToggleViewMode),
+    });
+  }
+
+  preferences.push(
+    {
+      testId: "settings-stats",
+      checked: appState.stats.open,
+      label: t("stats.fullTitle"),
+      onToggle: () => run(actionToggleStats),
+    },
+    {
+      testId: "settings-arrow-binding",
+      checked: appState.bindingPreference === "enabled",
+      label: t("labels.arrowBinding"),
+      onToggle: () => run(actionToggleArrowBinding),
+    },
+    {
+      testId: "settings-midpoint",
+      checked: appState.isMidpointSnappingEnabled,
+      label: t("labels.midpointSnapping"),
+      onToggle: () => run(actionToggleMidpointSnapping),
+    },
+    {
+      testId: "settings-hints",
+      checked: appState.showHints,
+      label: t("labels.showHints"),
+      onToggle: () => run(actionToggleShowHints),
+    },
+  );
+
+  const changeTheme = (value: Theme | "system") => {
+    if (appProps.onThemeChange) {
+      appProps.onThemeChange(value);
+      return;
+    }
+    console.warn(
+      "AppSettings: props.onThemeChange must be defined to change the theme.",
+    );
+  };
 
   return (
     <Dialog
@@ -137,14 +270,16 @@ export const AppSettings = ({ theme }: { theme: Theme | "system" }) => {
       size="wide"
       onCloseRequest={close}
       title={
-        <button
-          type="button"
-          className="AppSettings__back"
-          data-testid="settings-back"
-          onClick={close}
-        >
-          {t("buttons.back")}
-        </button>
+        <span className="dropdown-menu">
+          <button
+            type="button"
+            className={getDropdownMenuItemClassName()}
+            data-testid="settings-back"
+            onClick={close}
+          >
+            <MenuItemContent>{t("buttons.back")}</MenuItemContent>
+          </button>
+        </span>
       }
     >
       <div
@@ -153,152 +288,102 @@ export const AppSettings = ({ theme }: { theme: Theme | "system" }) => {
         style={fingerModeStyle(appState) ?? undefined}
       >
         <div className="AppSettings__list" data-testid="settings-category-list">
-          {CATEGORIES.map((id) => (
-            <button
-              key={id}
-              type="button"
-              className={clsx("dropdown-menu-item", {
-                "dropdown-menu-item--selected": category === id,
-              })}
-              aria-current={category === id ? "true" : undefined}
-              data-testid={`settings-category-${id}`}
-              onClick={() => setCategory(id)}
-            >
-              {categoryLabel(id)}
-            </button>
-          ))}
+          <MenuShell>
+            {CATEGORIES.map((id) => (
+              <button
+                key={id}
+                type="button"
+                className={getDropdownMenuItemClassName("", category === id)}
+                aria-current={category === id ? "true" : undefined}
+                data-testid={`settings-category-${id}`}
+                onClick={() => setCategory(id)}
+              >
+                <MenuItemContent>{categoryLabel(id)}</MenuItemContent>
+              </button>
+            ))}
+          </MenuShell>
         </div>
         <div className="AppSettings__detail" data-testid="settings-detail">
           {category === "thanks" && <ThanksPane />}
           {category === "preferences" && (
-            <>
-              <div className="AppSettings__group">
-                <h3 className="AppSettings__section">
-                  {t("labels.boxSelectionMode")}
-                </h3>
-                <RadioGroup
-                  name="settings-box-selection"
-                  value={appState.boxSelectionMode}
-                  onChange={(value) => setAppState({ boxSelectionMode: value })}
-                  choices={[
-                    {
-                      value: "contain" as const,
-                      label: t("labels.boxSelectionContain"),
-                    },
-                    {
-                      value: "overlap" as const,
-                      label: t("labels.boxSelectionOverlap"),
-                    },
-                  ]}
-                />
-              </div>
-              <div className="AppSettings__group">
-                <h3 className="AppSettings__section">
-                  {t("labels.inputDevice")}
-                </h3>
-                <RadioGroup
-                  name="settings-input-device"
-                  value={resolveInputDevice(appState.inputDevice)}
-                  onChange={(value) => setAppState({ inputDevice: value })}
-                  choices={[
-                    {
-                      value: "trackpad" as const,
-                      label: t("labels.inputDeviceTrackpad"),
-                    },
-                    {
-                      value: "mouse" as const,
-                      label: t("labels.inputDeviceMouse"),
-                    },
-                  ]}
-                />
-              </div>
-              <SwitchRow
-                name="settings-tool-lock"
-                checked={appState.activeTool.locked}
-                label={t("labels.preferences_toolLock")}
-                onChange={() => app.toggleLock()}
-              />
-              <SwitchRow
-                name="settings-objects-snap"
-                checked={appState.objectsSnapModeEnabled}
-                label={t("buttons.objectsSnapMode")}
-                onChange={() => run(actionToggleObjectsSnapMode)}
-              />
-              <SwitchRow
-                name="settings-grid"
-                checked={appState.gridModeEnabled}
-                label={t("labels.toggleGrid")}
-                onChange={() => run(actionToggleGridMode)}
-              />
-              <SwitchRow
-                name="settings-zen"
-                checked={appState.zenModeEnabled}
-                label={t("buttons.zenMode")}
-                onChange={() => run(actionToggleZenMode)}
-              />
-              {actionManager.isActionEnabled(actionToggleViewMode) && (
-                <SwitchRow
-                  name="settings-view-mode"
-                  checked={appState.viewModeEnabled}
-                  label={t("labels.viewMode")}
-                  onChange={() => run(actionToggleViewMode)}
-                />
-              )}
-              <SwitchRow
-                name="settings-stats"
-                checked={appState.stats.open}
-                label={t("stats.fullTitle")}
-                onChange={() => run(actionToggleStats)}
-              />
-              <SwitchRow
-                name="settings-arrow-binding"
-                checked={appState.bindingPreference === "enabled"}
-                label={t("labels.arrowBinding")}
-                onChange={() => run(actionToggleArrowBinding)}
-              />
-              <SwitchRow
-                name="settings-midpoint"
-                checked={appState.isMidpointSnappingEnabled}
-                label={t("labels.midpointSnapping")}
-                onChange={() => run(actionToggleMidpointSnapping)}
-              />
-              <SwitchRow
-                name="settings-hints"
-                checked={appState.showHints}
-                label={t("labels.showHints")}
-                onChange={() => run(actionToggleShowHints)}
-              />
-            </>
+            <MenuShell>
+              <DropdownMenuItemContentRadio<"contain" | "overlap">
+                name="settings-box-selection"
+                icon={emptyIcon}
+                value={appState.boxSelectionMode}
+                onChange={(value) => setAppState({ boxSelectionMode: value })}
+                choices={[
+                  {
+                    value: "contain",
+                    label: t("labels.boxSelectionContain"),
+                    ariaLabel: t("labels.boxSelectionContain"),
+                  },
+                  {
+                    value: "overlap",
+                    label: t("labels.boxSelectionOverlap"),
+                    ariaLabel: t("labels.boxSelectionOverlap"),
+                  },
+                ]}
+              >
+                {t("labels.boxSelectionMode")}
+              </DropdownMenuItemContentRadio>
+              <DropdownMenuItemContentRadio<Exclude<InputDevice, "auto">>
+                name="settings-input-device"
+                icon={emptyIcon}
+                value={resolveInputDevice(appState.inputDevice)}
+                onChange={(value) => setAppState({ inputDevice: value })}
+                choices={[
+                  {
+                    value: "trackpad",
+                    label: t("labels.inputDeviceTrackpad"),
+                    ariaLabel: t("labels.inputDeviceTrackpad"),
+                  },
+                  {
+                    value: "mouse",
+                    label: t("labels.inputDeviceMouse"),
+                    ariaLabel: t("labels.inputDeviceMouse"),
+                  },
+                ]}
+              >
+                {t("labels.inputDevice")}
+              </DropdownMenuItemContentRadio>
+              {preferences.map((item) => (
+                <PreferenceCheckbox key={item.testId} {...item} />
+              ))}
+            </MenuShell>
           )}
           {category === "themeLanguage" && (
-            <>
-              <div className="AppSettings__group">
-                <h3 className="AppSettings__section">{t("labels.theme")}</h3>
-                <RadioGroup<Theme | "system">
-                  name="settings-theme"
-                  value={theme}
-                  onChange={(value) => {
-                    if (appProps.onThemeChange) {
-                      appProps.onThemeChange(value);
-                      return;
-                    }
-                    console.warn(
-                      "AppSettings: props.onThemeChange must be defined to change the theme.",
-                    );
-                  }}
-                  choices={[
-                    { value: THEME.LIGHT, label: t("buttons.lightMode") },
-                    { value: THEME.DARK, label: t("buttons.darkMode") },
-                    { value: "system", label: t("buttons.systemMode") },
-                  ]}
-                />
-              </div>
-              <div className="AppSettings__group">
-                <h3 className="AppSettings__section">{t("labels.language")}</h3>
+            <MenuShell>
+              <DropdownMenuItemContentRadio<Theme | "system">
+                name="settings-theme"
+                value={theme}
+                onChange={changeTheme}
+                choices={[
+                  {
+                    value: THEME.LIGHT,
+                    label: SunIcon,
+                    ariaLabel: t("buttons.lightMode"),
+                  },
+                  {
+                    value: THEME.DARK,
+                    label: MoonIcon,
+                    ariaLabel: t("buttons.darkMode"),
+                  },
+                  {
+                    value: "system",
+                    label: DeviceDesktopIcon,
+                    ariaLabel: t("buttons.systemMode"),
+                  },
+                ]}
+              >
+                {t("labels.theme")}
+              </DropdownMenuItemContentRadio>
+              <DropdownMenuGroup title={t("labels.language")}>
                 <LanguageList />
-              </div>
-              <div
-                className="dropdown-menu-item AppSettings__finger"
+              </DropdownMenuGroup>
+              <button
+                type="button"
+                className={getDropdownMenuItemClassName()}
                 data-testid="settings-finger-mode"
                 onClick={(event) => {
                   const target = event.target as HTMLElement;
@@ -308,17 +393,30 @@ export const AppSettings = ({ theme }: { theme: Theme | "system" }) => {
                   setAppState({ fingerMode: !appState.fingerMode });
                 }}
               >
-                <span className="dropdown-menu-item__icon">{fingerIcon}</span>
-                <span className="dropdown-menu-item__text">
+                <MenuItemContent
+                  icon={fingerIcon}
+                  badge={
+                    <span
+                      onPointerDown={(event) => event.stopPropagation()}
+                      onClick={(event) => event.stopPropagation()}
+                      onKeyDown={(event) => {
+                        if (event.key === " " || event.key === "Enter") {
+                          event.stopPropagation();
+                        }
+                      }}
+                    >
+                      <Switch
+                        name="settings-finger-mode"
+                        checked={appState.fingerMode}
+                        title={t("labels.fingerMode")}
+                        onChange={(value) => setAppState({ fingerMode: value })}
+                      />
+                    </span>
+                  }
+                >
                   {t("labels.fingerMode")}
-                </span>
-                <Switch
-                  name="settings-finger-mode"
-                  checked={appState.fingerMode}
-                  title={t("labels.fingerMode")}
-                  onChange={(value) => setAppState({ fingerMode: value })}
-                />
-              </div>
+                </MenuItemContent>
+              </button>
               {(
                 [
                   [
@@ -359,42 +457,39 @@ export const AppSettings = ({ theme }: { theme: Theme | "system" }) => {
                   ],
                 ] as const
               ).map(([testId, label, value, key]) => (
-                <div
-                  key={key}
-                  className="AppSettings__group"
-                  data-testid={testId}
-                >
-                  <h3 className="AppSettings__section">{t(label)}</h3>
-                  <RadioGroup
-                    name={testId}
-                    value={value}
-                    onChange={(next) => {
-                      switch (key) {
-                        case "fingerModeDefaultButton":
-                          setAppState({ fingerModeDefaultButton: next });
-                          break;
-                        case "fingerModeLgButton":
-                          setAppState({ fingerModeLgButton: next });
-                          break;
-                        case "fingerModeMenuItem":
-                          setAppState({ fingerModeMenuItem: next });
-                          break;
-                        case "fingerModeMenuGap":
-                          setAppState({ fingerModeMenuGap: next });
-                          break;
-                        case "fingerModeScaleHandle":
-                          setAppState({ fingerModeScaleHandle: next });
-                          break;
-                        case "fingerModeRotateHandle":
-                          setAppState({ fingerModeRotateHandle: next });
-                          break;
-                      }
-                    }}
-                    choices={sizeChoices}
-                  />
+                <div key={key} data-testid={testId}>
+                  <DropdownMenuGroup title={t(label)}>
+                    <RadioGroup
+                      name={testId}
+                      value={value}
+                      onChange={(next) => {
+                        switch (key) {
+                          case "fingerModeDefaultButton":
+                            setAppState({ fingerModeDefaultButton: next });
+                            break;
+                          case "fingerModeLgButton":
+                            setAppState({ fingerModeLgButton: next });
+                            break;
+                          case "fingerModeMenuItem":
+                            setAppState({ fingerModeMenuItem: next });
+                            break;
+                          case "fingerModeMenuGap":
+                            setAppState({ fingerModeMenuGap: next });
+                            break;
+                          case "fingerModeScaleHandle":
+                            setAppState({ fingerModeScaleHandle: next });
+                            break;
+                          case "fingerModeRotateHandle":
+                            setAppState({ fingerModeRotateHandle: next });
+                            break;
+                        }
+                      }}
+                      choices={sizeChoices}
+                    />
+                  </DropdownMenuGroup>
                 </div>
               ))}
-            </>
+            </MenuShell>
           )}
           {category === "about" && <AboutPane />}
         </div>
@@ -408,22 +503,24 @@ const AboutPane = () => {
 
   return (
     <div data-testid="settings-about">
-      <p className="AppSettings__sentence" data-testid="settings-about-name">
+      <p className="excalidraw__paragraph" data-testid="settings-about-name">
         Excalidraw
       </p>
-      <p className="AppSettings__sentence" data-testid="settings-about-fork">
+      <p className="excalidraw__paragraph" data-testid="settings-about-fork">
         {t("labels.aboutFork")}
       </p>
-      <p className="AppSettings__sentence" data-testid="settings-about-version">
+      <p className="excalidraw__paragraph" data-testid="settings-about-version">
         {t("stats.version")}: {getVersion()}
       </p>
-      <a
-        className="AppSettings__link"
-        data-testid="settings-about-repo"
-        href="https://github.com/yiming/excalidraw"
-      >
-        {t("labels.aboutRepository")}
-      </a>
+      <MenuShell>
+        <SettingsLink
+          testId="settings-about-repo"
+          href="https://github.com/yiming/excalidraw"
+          icon={GithubIcon}
+        >
+          {t("labels.aboutRepository")}
+        </SettingsLink>
+      </MenuShell>
     </div>
   );
 };
@@ -441,31 +538,31 @@ const ThanksPane = () => {
   return (
     <div data-testid="settings-thanks">
       <p
-        className="AppSettings__sentence"
+        className="excalidraw__paragraph"
         data-testid="settings-thanks-sentence"
       >
         {t("labels.specialThanksSentence")}
       </p>
-      <div className="AppSettings__links">
-        <a className="AppSettings__link" href={plusHref}>
+      <MenuShell>
+        <SettingsLink href={plusHref} icon={PlusPromoIcon}>
           Excalidraw+
-        </a>
-        <a
-          className="AppSettings__link"
+        </SettingsLink>
+        <SettingsLink
           href="https://github.com/excalidraw/excalidraw"
+          icon={GithubIcon}
         >
           GitHub
-        </a>
-        <a className="AppSettings__link" href="https://x.com/excalidraw">
+        </SettingsLink>
+        <SettingsLink href="https://x.com/excalidraw" icon={XBrandIcon}>
           {t("labels.followUs")}
-        </a>
-        <a className="AppSettings__link" href="https://discord.gg/UexuTaE">
+        </SettingsLink>
+        <SettingsLink href="https://discord.gg/UexuTaE" icon={DiscordIcon}>
           {t("labels.discordChat")}
-        </a>
-        <a className="AppSettings__link" href={signHref}>
+        </SettingsLink>
+        <SettingsLink href={signHref} icon={loginIcon}>
           {signedIn ? t("labels.signIn") : t("labels.signUp")}
-        </a>
-      </div>
+        </SettingsLink>
+      </MenuShell>
     </div>
   );
 };

@@ -1,4 +1,8 @@
-import { eyeIcon, settingsIcon } from "@excalidraw/excalidraw/components/icons";
+import {
+  eyeIcon,
+  LibraryIcon,
+  settingsIcon,
+} from "@excalidraw/excalidraw/components/icons";
 import { useI18n } from "@excalidraw/excalidraw/i18n";
 import { MainMenu } from "@excalidraw/excalidraw/index";
 import { useExcalidrawSetAppState } from "@excalidraw/excalidraw/components/App";
@@ -34,6 +38,19 @@ export const AppMainMenu: React.FC<{
       <MainMenu.DefaultItems.CommandPalette className="highlighted" />
       <MainMenu.DefaultItems.SearchMenu />
       <MainMenu.DefaultItems.Help />
+      <MainMenu.Item
+        icon={LibraryIcon}
+        data-testid="workspace-menu-item"
+        onSelect={(event) => {
+          event.preventDefault();
+          setAppState({
+            openMenu: null,
+            openDialog: { name: "workspace" },
+          });
+        }}
+      >
+        {t("labels.workspace")}
+      </MainMenu.Item>
       <MainMenu.Item
         icon={settingsIcon}
         data-testid="settings-menu-item"
